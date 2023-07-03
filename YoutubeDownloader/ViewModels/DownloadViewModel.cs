@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using YoutubeDownloader.Commands;
 
 namespace YoutubeDownloader.ViewModels
 {
@@ -17,12 +18,14 @@ namespace YoutubeDownloader.ViewModels
 
         public DownloadViewModel()
         {
+            DownloadCommand = new DownloadCommand();
+
             _videos = new ObservableCollection<VideoViewModel>();
 
             _videos.Add(new VideoViewModel(new Models.Video("Tenacious D - Peaches", "https://www.youtube.com/watch?v=2FPFgW0xVB0&list=PLA8ZIAm2I03hS41Fy4vFpRw8AdYNBXmNm&index=3", "5:35", "Tenacious D", "https://i.ytimg.com/vi/wxznTygnRfQ/maxresdefault.jpg")));
         }
-
-        private string VideoUrl
+        
+        public string VideoUrl
         {
             get
             {
@@ -31,7 +34,7 @@ namespace YoutubeDownloader.ViewModels
             set
             {
                 _videoUrl = value;
-                OnPropertyChanged(nameof(_videoUrl));
+                OnPropertyChanged(nameof(VideoUrl));
             }
         }
         public ICommand DownloadCommand { get; }
