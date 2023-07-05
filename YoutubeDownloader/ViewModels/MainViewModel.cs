@@ -3,16 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YoutubeDownloader.Stores;
 
 namespace YoutubeDownloader.ViewModels
 {
-    class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase
     {
-        public ViewModelBase CurrentViewModel { get; }
+        private readonly NavigationStore _navigationStore;
 
-        public MainViewModel()
+        public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
+
+        public MainViewModel(NavigationStore navigationStore)
         {
-            CurrentViewModel = new DownloadViewModel();
+            _navigationStore = navigationStore;
+
+            _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+        }
+
+        private void OnCurrentViewModelChanged()
+        {
+            OnPropertyChanged(nameof(CurrentViewModel));
         }
     }
 }

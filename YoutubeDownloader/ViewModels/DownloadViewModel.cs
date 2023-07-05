@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using YoutubeDownloader.Commands;
+using YoutubeDownloader.Stores;
 
 namespace YoutubeDownloader.ViewModels
 {
@@ -16,9 +17,14 @@ namespace YoutubeDownloader.ViewModels
 
         public IEnumerable<VideoViewModel> Videos => _videos;
 
-        public DownloadViewModel()
+        public ICommand DownloadCommand { get; }
+        public ICommand AboutCommand { get; }
+
+        public DownloadViewModel(NavigationStore navigationStore, Func<ViewModelBase> createViewModel)
         {
-            DownloadCommand = new DownloadCommand();
+            DownloadCommand = new DownloadCommand(this);
+            AboutCommand = new NavigateCommand(navigationStore, createViewModel);
+            
 
             _videos = new ObservableCollection<VideoViewModel>();
 
@@ -37,9 +43,6 @@ namespace YoutubeDownloader.ViewModels
                 OnPropertyChanged(nameof(VideoUrl));
             }
         }
-        public ICommand DownloadCommand { get; }
 
-       
-        
     }
 }
