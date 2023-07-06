@@ -5,6 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using YoutubeDownloader.Models;
+using YoutubeDownloader.Services;
 using YoutubeDownloader.Stores;
 using YoutubeDownloader.ViewModels;
 
@@ -16,9 +18,11 @@ namespace YoutubeDownloader
     public partial class App : Application
     {   
         private readonly NavigationStore _navigationStore;
+        private readonly Downloader _downloader;
 
         public App()
-        {
+        {   
+            _downloader = new Downloader();
             _navigationStore = new NavigationStore();
         }
 
@@ -37,7 +41,7 @@ namespace YoutubeDownloader
 
         private DownloadViewModel CreateDownloadViewModel()
         {
-            return new DownloadViewModel(_navigationStore, CreateAboutViewModel);
+            return new DownloadViewModel(_downloader, new NavigationService(_navigationStore, CreateAboutViewModel));
         }
 
         private ViewModelBase CreateAboutViewModel()
