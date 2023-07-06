@@ -5,9 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:YoutubeDownloader" 
         xmlns:views="clr-namespace:YoutubeDownloader.Views"
+        xmlns:vms="clr-namespace:YoutubeDownloader.ViewModels"
         mc:Ignorable="d"
         Title="YoutubeDownloader" Height="450" Width="800">
     <Grid Margin="20 10">
-        <views:DownloadView DataContext="{Binding CurrentViewModel}"/>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type vms:DownloadViewModel}">
+                <views:DownloadView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:AboutViewModel}">
+                <views:AboutView />
+            </DataTemplate>
+        </Grid.Resources>
+
+        <ContentControl Content="{Binding CurrentViewModel}" />
+
     </Grid>
 </Window>
