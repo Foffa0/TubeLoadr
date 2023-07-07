@@ -16,6 +16,9 @@
             <DataTemplate DataType="{x:Type vms:AboutViewModel}">
                 <views:AboutView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:DownloadHistoryViewModel}">
+                <views:DownloadHistoryView />
+            </DataTemplate>
         </Grid.Resources>
 
         <ContentControl Content="{Binding CurrentViewModel}" />
