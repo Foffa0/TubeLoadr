@@ -23,12 +23,13 @@ namespace YoutubeDownloader.ViewModels
         public ICommand DownloadCommand { get; }
         public ICommand AboutCommand { get; }
 
-        public DownloadViewModel(Downloader downloader, NavigationService aboutViewNavigationService)
+        public DownloadViewModel(Downloader downloader, NavigationService aboutViewNavigationService, NavigationService downloadHistoryNavigationService)
         {
-            DownloadCommand = new DownloadCommand(this);
+            _downloader = downloader;
+
+            DownloadCommand = new DownloadCommand(_downloader, this, downloadHistoryNavigationService);
             AboutCommand = new NavigateCommand(aboutViewNavigationService);
             
-            _downloader = downloader;
             _videos = new ObservableCollection<VideoViewModel>();
 
             UpdateVideos();
