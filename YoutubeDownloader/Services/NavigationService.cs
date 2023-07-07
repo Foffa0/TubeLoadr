@@ -8,7 +8,7 @@ using YoutubeDownloader.ViewModels;
 
 namespace YoutubeDownloader.Services
 {
-    internal class NavigationService
+    public class NavigationService
     {
 
         private readonly NavigationStore _navigationStore;
