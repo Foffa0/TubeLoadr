@@ -18,6 +18,7 @@ namespace YoutubeDownloader.ViewModels
         public ICommand LoadHistoryVideosCommand { get; }
         public ICommand LoadDownloadViewCommand { get; }
 
+
         public DownloadHistoryViewModel(DownloaderStore downloaderStore, NavigationService historyViewNavigationService)
         {
             _downloaderStore = downloaderStore;
@@ -27,7 +28,22 @@ namespace YoutubeDownloader.ViewModels
             LoadDownloadViewCommand = new NavigateCommand(historyViewNavigationService);
 
             _videos = new ObservableCollection<VideoViewModel>();
+
+            _downloaderStore.VideoCreated += OnVideoCreated;
         }
+
+        public override void Dispose()
+        {   
+            _downloaderStore.VideoCreated -= OnVideoCreated;
+            base.Dispose();
+        }
+
+        private void OnVideoCreated(Video video)
+        {
+            VideoViewModel videoViewModel = new VideoViewModel(video);
+            _videos.Add(videoViewModel);
+        }
+
 
         public static DownloadHistoryViewModel LoadViewModel(DownloaderStore downloaderStore, NavigationService historyViewNavigationService)
         {
@@ -35,6 +51,7 @@ namespace YoutubeDownloader.ViewModels
             viewModel.LoadHistoryVideosCommand.Execute(null);
             return viewModel;
         }
+
 
         public void UpdateVideos(IEnumerable<Video> videos)
         {

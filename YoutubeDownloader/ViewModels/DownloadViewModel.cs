@@ -14,7 +14,7 @@ namespace YoutubeDownloader.ViewModels
 {
     class DownloadViewModel : ViewModelBase
     {
-        private readonly Downloader _downloader;
+        private readonly DownloaderStore _downloaderStore;
         private string _videoUrl;
         private readonly ObservableCollection<VideoViewModel> _videos;
 
@@ -23,21 +23,21 @@ namespace YoutubeDownloader.ViewModels
         public ICommand DownloadCommand { get; }
         public ICommand AboutCommand { get; }
 
-        public DownloadViewModel(Downloader downloader, NavigationService aboutViewNavigationService, NavigationService downloadHistoryNavigationService)
+        public DownloadViewModel(DownloaderStore downloaderStore, NavigationService aboutViewNavigationService, NavigationService downloadHistoryNavigationService)
         {
-            _downloader = downloader;
+            _downloaderStore = downloaderStore;
 
-            DownloadCommand = new DownloadCommand(_downloader, this, downloadHistoryNavigationService);
+            DownloadCommand = new DownloadCommand(_downloaderStore, this, downloadHistoryNavigationService);
             AboutCommand = new NavigateCommand(aboutViewNavigationService);
             
             _videos = new ObservableCollection<VideoViewModel>();
 
-            UpdateVideos();
+            //UpdateVideos();
 
             _videos.Add(new VideoViewModel(new Models.Video("Tenacious D - Peaches", "https://www.youtube.com/watch?v=2FPFgW0xVB0&list=PLA8ZIAm2I03hS41Fy4vFpRw8AdYNBXmNm&index=3", "5:35", "Tenacious D", "https://i.ytimg.com/vi/wxznTygnRfQ/maxresdefault.jpg")));
         }
 
-        private void UpdateVideos()
+        /*private void UpdateVideos()
         {
             _videos.Clear();
 
@@ -46,7 +46,7 @@ namespace YoutubeDownloader.ViewModels
                 VideoViewModel v = new VideoViewModel(video);
                 _videos.Add(v);
             }
-        }
+        }*/
         
         public string VideoUrl
         {

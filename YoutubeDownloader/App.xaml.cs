@@ -62,7 +62,7 @@ namespace YoutubeDownloader
 
         private DownloadViewModel CreateDownloadViewModel()
         {
-            return new DownloadViewModel(_downloader, new NavigationService(_navigationStore, CreateAboutViewModel), new NavigationService(_navigationStore, CreateDownloadHistoryViewModel));
+            return new DownloadViewModel(_downloaderStore, new NavigationService(_navigationStore, CreateAboutViewModel), new NavigationService(_navigationStore, CreateDownloadHistoryViewModel));
         }
 
         private DownloadHistoryViewModel CreateDownloadHistoryViewModel()
