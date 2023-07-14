@@ -15,15 +15,15 @@ namespace YoutubeDownloader.Commands
     class DownloadCommand : AsyncCommandBase
     {
         private readonly DownloaderStore _downloaderStore;
+        private readonly Downloader _downloader;
         private readonly DownloadViewModel _downloadViewModel;
-        private readonly NavigationService _downloadHistoryNavigationService;
 
-        public DownloadCommand(DownloaderStore downloaderStore, DownloadViewModel downloadViewModel, NavigationService downloadHistoryNavigationService) 
+        public DownloadCommand(DownloaderStore downloaderStore, Downloader downloader, DownloadViewModel downloadViewModel) 
         {
             _downloaderStore = downloaderStore;
+            _downloader = downloader;
 
             _downloadViewModel = downloadViewModel;
-            _downloadHistoryNavigationService = downloadHistoryNavigationService;
             _downloadViewModel.PropertyChanged += OnViewModelPropertyChanged;
         }
 
@@ -35,16 +35,16 @@ namespace YoutubeDownloader.Commands
 
         public override async Task ExecuteAsync(object parameter)
         {
-            try
-            {
-                await _downloaderStore.AddVideoToHistory(new Video("Testtitle", _downloadViewModel.VideoUrl, "5:00", "Testchannel", "https://shop.avicii.com/cdn/shop/products/Avicii_SS_Front_grande_75f00e8c-2f44-401c-bff2-36ee0940fa43.png?v=1562179903"));
-            }
+            /*try
+            {*/
+               await _downloader.DownloadVideo(_downloadViewModel.VideoUrl);
+            _downloadViewModel.VideoUrl = "";
+            /*}
             catch (Exception) 
             {
                 MessageBox.Show("Failed to save Video.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            _downloadHistoryNavigationService.Navigate();
+            */
         }
 
 
