@@ -11,6 +11,7 @@ using YoutubeDownloader.Models;
 using YoutubeDownloader.Services;
 using YoutubeDownloader.Services.VideoCreators;
 using YoutubeDownloader.Services.VideoProviders;
+using YoutubeDownloader.Services.yt_dlp;
 using YoutubeDownloader.Stores;
 using YoutubeDownloader.ViewModels;
 
@@ -62,7 +63,7 @@ namespace YoutubeDownloader
 
         private DownloadViewModel CreateDownloadViewModel()
         {
-            return new DownloadViewModel(_downloaderStore, new NavigationService(_navigationStore, CreateAboutViewModel), new NavigationService(_navigationStore, CreateDownloadHistoryViewModel));
+            return DownloadViewModel.LoadViewModel(_downloaderStore, new NavigationService(_navigationStore, CreateDownloadHistoryViewModel), new NavigationService(_navigationStore, CreateAboutViewModel));
         }
 
         private DownloadHistoryViewModel CreateDownloadHistoryViewModel()

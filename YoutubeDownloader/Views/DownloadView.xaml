@@ -16,6 +16,7 @@
         <TextBox Grid.Row="0" Width="500" Height="20" Text="{Binding VideoUrl, UpdateSourceTrigger=PropertyChanged}"></TextBox>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button Width="80" Height="40" Command="{Binding DownloadCommand}">Download</Button>
+            <Button Width="80" Height="40" Command="{Binding DownloadHistoryCommand}">Download History</Button>
             <Button Width="80" Height="40" Command="{Binding AboutCommand}">About</Button>
         </StackPanel>
         
