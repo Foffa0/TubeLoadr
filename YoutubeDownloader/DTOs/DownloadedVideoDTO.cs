@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace YoutubeDownloader.DTOs
 {
-    public class VideoDTO
+    public class DownloadedVideoDTO
     {
         [Key]
         public Guid Id { get; set; }
@@ -17,5 +17,6 @@ namespace YoutubeDownloader.DTOs
         public int Duration { get; set; }
         public string Channel { get; set; }
         public string Thumbnail { get; set; }
+        public string FilePath { get; set; }
     }
 }

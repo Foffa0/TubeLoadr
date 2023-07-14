@@ -19,11 +19,21 @@ namespace YoutubeDownloader.Services.VideoProviders
             _dbContextFactory = dbContextFactory;
         }
 
-        public async Task<IEnumerable<Video>> GetAllVideos()
+        public async Task<IEnumerable<DownloadedVideo>> GetAllVideos()
         {
             using (DownloaderDbContext context = _dbContextFactory.CreateDbContext())
             {
-                IEnumerable<VideoDTO> videoDTOs = await context.Videos.ToListAsync();
+                IEnumerable<DownloadedVideoDTO> videoDTOs = await context.Videos.ToListAsync();
+
+                return videoDTOs.Select(r => ToDownloadedVideo(r));
+            }
+        }
+
+        public async Task<IEnumerable<Video>> GetAllQueuedVideos()
+        {
+            using (DownloaderDbContext context = _dbContextFactory.CreateDbContext())
+            {
+                IEnumerable<VideoDTO> videoDTOs = await context.QueuedVideos.ToListAsync();
 
                 return videoDTOs.Select(r => ToVideo(r));
             }
@@ -31,7 +41,12 @@ namespace YoutubeDownloader.Services.VideoProviders
 
         private static Video ToVideo(VideoDTO r)
         {
-            return new Video(r.Title, r.Url, r.Duration, r.Channel, r.Thumbnail);
+            return new Video(r.Id, r.Title, r.Url, r.Duration, r.Channel, r.Thumbnail);
+        }
+
+        private static DownloadedVideo ToDownloadedVideo(DownloadedVideoDTO r)
+        {
+            return new DownloadedVideo(r.Id, r.Title, r.Url, r.Duration, r.Channel, r.Thumbnail, r.FilePath);
         }
     }
 }

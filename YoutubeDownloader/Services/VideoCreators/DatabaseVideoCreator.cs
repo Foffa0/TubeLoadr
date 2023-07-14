@@ -19,13 +19,46 @@ namespace YoutubeDownloader.Services.VideoCreators
             _dbContextFactory = dbContextFactory;
         }
 
-        public async Task CreateVideo(Video video)
+        public async Task CreateVideo(DownloadedVideo video)
+        {
+            using (DownloaderDbContext context = _dbContextFactory.CreateDbContext())
+            {
+                DownloadedVideoDTO downloadedVideoDTO = ToDownloadedVideoDTO(video);
+
+                context.Videos.Add(downloadedVideoDTO);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteVideo(DownloadedVideo video)
+        {
+            using (DownloaderDbContext context = _dbContextFactory.CreateDbContext())
+            {
+                DownloadedVideoDTO downloadedVideoDTO = ToDownloadedVideoDTO(video);
+                Guid guid = Guid.NewGuid();
+                context.Videos.Remove(downloadedVideoDTO);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task CreateQueuedVideo(Video video)
         {
             using (DownloaderDbContext context = _dbContextFactory.CreateDbContext())
             {
                 VideoDTO videoDTO = ToVideoDTO(video);
 
-                context.Videos.Add(videoDTO);
+                context.QueuedVideos.Add(videoDTO);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteQueuedVideo(Video video)
+        {
+            using (DownloaderDbContext context = _dbContextFactory.CreateDbContext())
+            {
+                VideoDTO videoDTO = ToVideoDTO(video);
+
+                context.QueuedVideos.Remove(videoDTO);
                 await context.SaveChangesAsync();
             }
         }
@@ -34,11 +67,26 @@ namespace YoutubeDownloader.Services.VideoCreators
         {
             return new VideoDTO()
             {
+                Id = video.Id,
                 Title = video.Title,
                 Url = video.Url,
                 Duration = video.Duration,
                 Channel = video.Channel,
                 Thumbnail = video.Thumbnail,
+            };
+        }
+
+        private DownloadedVideoDTO ToDownloadedVideoDTO(DownloadedVideo video)
+        {
+            return new DownloadedVideoDTO()
+            {
+                Id = video.Id,
+                Title = video.Title,
+                Url = video.Url,
+                Duration = video.Duration,
+                Channel = video.Channel,
+                Thumbnail = video.Thumbnail,
+                FilePath = video.FilePath,
             };
         }
     }

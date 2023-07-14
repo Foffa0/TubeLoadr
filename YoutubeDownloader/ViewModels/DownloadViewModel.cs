@@ -21,32 +21,45 @@ namespace YoutubeDownloader.ViewModels
         public IEnumerable<VideoViewModel> Videos => _videos;
 
         public ICommand DownloadCommand { get; }
+        public ICommand DownloadHistoryCommand { get; }
         public ICommand AboutCommand { get; }
+        public ICommand LoadQueuedVideosCommand { get; }
 
         public DownloadViewModel(DownloaderStore downloaderStore, NavigationService aboutViewNavigationService, NavigationService downloadHistoryNavigationService)
         {
             _downloaderStore = downloaderStore;
 
-            DownloadCommand = new DownloadCommand(_downloaderStore, this, downloadHistoryNavigationService);
+            DownloadCommand = new DownloadCommand(_downloaderStore, _downloaderStore.Downloader, this);
+            DownloadHistoryCommand = new NavigateCommand(downloadHistoryNavigationService);
             AboutCommand = new NavigateCommand(aboutViewNavigationService);
-            
+
+            LoadQueuedVideosCommand = new LoadQueuedVideosCommand(this, downloaderStore);
+
             _videos = new ObservableCollection<VideoViewModel>();
 
-            //UpdateVideos();
+            _downloaderStore.QueuedVideoCreated += OnVideoCreated;
 
-            _videos.Add(new VideoViewModel(new Models.Video("Tenacious D - Peaches", "https://www.youtube.com/watch?v=2FPFgW0xVB0&list=PLA8ZIAm2I03hS41Fy4vFpRw8AdYNBXmNm&index=3", "5:35", "Tenacious D", "https://i.ytimg.com/vi/wxznTygnRfQ/maxresdefault.jpg")));
         }
 
-        /*private void UpdateVideos()
+        public override void Dispose()
         {
-            _videos.Clear();
+            _downloaderStore.QueuedVideoCreated -= OnVideoCreated;
+            base.Dispose();
+        }
 
-            foreach (Video video in _downloader.GetQueuedVideos())
-            {
-                VideoViewModel v = new VideoViewModel(video);
-                _videos.Add(v);
-            }
-        }*/
+        public static DownloadViewModel LoadViewModel(DownloaderStore downloaderStore, NavigationService downloadViewNavigationService, NavigationService aboutViewNavigationService)
+        {
+            DownloadViewModel viewModel = new DownloadViewModel(downloaderStore, aboutViewNavigationService, downloadViewNavigationService);
+            viewModel.LoadQueuedVideosCommand.Execute(null);
+            return viewModel;
+        }
+
+
+        private void OnVideoCreated(Video video)
+        {
+            VideoViewModel videoViewModel = new VideoViewModel(video);
+            _videos.Add(videoViewModel);
+        }
         
         public string VideoUrl
         {
@@ -58,6 +71,17 @@ namespace YoutubeDownloader.ViewModels
             {
                 _videoUrl = value;
                 OnPropertyChanged(nameof(VideoUrl));
+            }
+        }
+
+        public void UpdateVideos(IEnumerable<Video> videos)
+        {
+            _videos.Clear();
+
+            foreach (Video video in videos)
+            {
+                VideoViewModel v = new VideoViewModel(video);
+                _videos.Add(v);
             }
         }
 

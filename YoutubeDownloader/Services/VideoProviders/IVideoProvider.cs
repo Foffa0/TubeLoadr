@@ -9,6 +9,8 @@ namespace YoutubeDownloader.Services.VideoProviders
 {
     public interface IVideoProvider
     {
-        Task<IEnumerable<Video>> GetAllVideos();
+        Task<IEnumerable<DownloadedVideo>> GetAllVideos();
+
+        Task<IEnumerable<Video>> GetAllQueuedVideos();
     }
 }

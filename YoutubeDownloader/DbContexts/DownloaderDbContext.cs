@@ -15,6 +15,8 @@ namespace YoutubeDownloader.DbContexts
         {
         }
 
-        public DbSet<VideoDTO> Videos { get; set; }
+        public DbSet<DownloadedVideoDTO> Videos { get; set; }
+
+        public DbSet<VideoDTO> QueuedVideos { get; set; }
     }
 }

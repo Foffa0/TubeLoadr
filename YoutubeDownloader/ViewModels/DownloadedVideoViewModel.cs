@@ -7,15 +7,16 @@ using YoutubeDownloader.Models;
 
 namespace YoutubeDownloader.ViewModels
 {
-    public class VideoViewModel : ViewModelBase
+    public class DownloadedVideoViewModel : ViewModelBase
     {
-        private readonly Video _video;
+        private readonly DownloadedVideo _video;
 
         public string Title => _video.Title;
         public int Duration => _video.Duration;
         public string Thumbnail => _video.Thumbnail;
+        public string FilePath => _video.FilePath;
 
-        public VideoViewModel(Video video)
+        public DownloadedVideoViewModel(DownloadedVideo video)
         {
             _video = video;
         }
