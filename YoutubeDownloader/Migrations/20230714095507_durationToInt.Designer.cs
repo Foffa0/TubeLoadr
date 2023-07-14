@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YoutubeDownloader.DbContexts;
 
@@ -10,46 +11,14 @@ using YoutubeDownloader.DbContexts;
 namespace YoutubeDownloader.Migrations
 {
     [DbContext(typeof(DownloaderDbContext))]
-    partial class DownloaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230714095507_durationToInt")]
+    partial class durationToInt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.8");
-
-            modelBuilder.Entity("YoutubeDownloader.DTOs.DownloadedVideoDTO", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Channel")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Thumbnail")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Videos");
-                });
 
             modelBuilder.Entity("YoutubeDownloader.DTOs.VideoDTO", b =>
                 {
@@ -78,7 +47,7 @@ namespace YoutubeDownloader.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("QueuedVideos");
+                    b.ToTable("VideoDTO");
                 });
 #pragma warning restore 612, 618
         }
