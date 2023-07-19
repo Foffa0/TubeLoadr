@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,12 +40,14 @@ namespace YoutubeDownloader.ViewModels
             _videos = new ObservableCollection<VideoViewModel>();
 
             _downloaderStore.QueuedVideoCreated += OnVideoCreated;
-
+            _downloaderStore.QueuedVideoDeleted += OnVideoDeleted;
         }
+
 
         public override void Dispose()
         {
             _downloaderStore.QueuedVideoCreated -= OnVideoCreated;
+            _downloaderStore.QueuedVideoDeleted -= OnVideoDeleted;
             base.Dispose();
         }
 
@@ -61,6 +65,12 @@ namespace YoutubeDownloader.ViewModels
             _videos.Add(videoViewModel);
         }
         
+        private void OnVideoDeleted(Video video)
+        {
+            VideoViewModel videoViewModel = new VideoViewModel(video);
+            _videos.Remove(_videos.Where(i => i.Id == video.Id).Single());
+        }
+
         public string VideoUrl
         {
             get
