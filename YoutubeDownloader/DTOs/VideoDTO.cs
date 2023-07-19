@@ -17,5 +17,7 @@ namespace YoutubeDownloader.DTOs
         public int Duration { get; set; }
         public string Channel { get; set; }
         public string Thumbnail { get; set; }
+
+        public string FilePath { get; set;}
     }
 }
