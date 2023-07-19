@@ -61,17 +61,37 @@ namespace YoutubeDownloader.Models
             await _videoCreator.DeleteVideo(downloadedVideo);
         }
 
-        public event Action<Video> VideoAddQueue;
+        public event Action<Video> VideoCreated;
+        public event Action<Video> VideoDeleted;
+        public event Action<DownloadedVideo> DownloadedVideoCreated;
+        public event Action<DownloadedVideo> DownloadedVideoDeleted;
 
-        public async Task DownloadVideo(string url)
+        public async Task AddToQueue(string url)
         {
             Video video = await _ytdlpDownloader.AddToQueue(url);
-            OnVideoAddQueue(video);
+
+            await AddVideoToQueue(video);
+            VideoCreated?.Invoke(video);
         }
 
-        private void OnVideoAddQueue(Video video)
+        public async void DownloadVideo()
         {
-            VideoAddQueue?.Invoke(video);
+            IEnumerable<Video> v = await GetQueuedVideos();
+            List<Video> videos = v.ToList();
+
+            await _ytdlpDownloader.DownloadVideo(videos.First());
+
+            await DeleteQueuedVideo(videos.First());
+            VideoDeleted?.Invoke(videos.First());
+
+            DownloadedVideo vid = new DownloadedVideo(videos.First().Title, videos.First().Url, videos.First().Duration, videos.First().Channel, videos.First().Thumbnail, videos.First().FilePath);
+            DownloadedVideoCreated?.Invoke(vid);
+
+            videos.Remove(videos.First());
+            if (videos.Count() > 0)
+            {
+                DownloadVideo();
+            }
         }
 
         public async Task AddVideoToQueue(Video video)

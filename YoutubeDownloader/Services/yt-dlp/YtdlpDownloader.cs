@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -74,7 +75,7 @@ namespace YoutubeDownloader.Services.yt_dlp
                     metadata = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
                     Debug.WriteLine(metadata.GetValueOrDefault("title"));
                 }
-                //File.Delete($@"yt-dlp/{output}");
+                File.Delete($@"yt-dlp/{output}");
 
 
                 JsonElement thumbnails = (JsonElement)metadata.GetValueOrDefault("thumbnails");
@@ -92,10 +93,39 @@ namespace YoutubeDownloader.Services.yt_dlp
                 Debug.Write(thumbnailUrl);
 
 
-                Video video = new Video(metadata.GetValueOrDefault("title").ToString(), metadata.GetValueOrDefault("webpage_url").ToString(), int.Parse(metadata.GetValueOrDefault("duration").ToString()), metadata.GetValueOrDefault("channel").ToString(), thumbnailUrl);
+                Video video = new Video(metadata.GetValueOrDefault("title").ToString(), metadata.GetValueOrDefault("webpage_url").ToString(), int.Parse(metadata.GetValueOrDefault("duration").ToString()), metadata.GetValueOrDefault("channel").ToString(), thumbnailUrl, "D:/Desktop/Video");
                 return video;
             });
             return video;
+        }
+
+        public async Task DownloadVideo(Video video)
+        {
+
+            ProcessStartInfo info = new ProcessStartInfo("cmd");
+            info.UseShellExecute = false;
+            info.RedirectStandardOutput = true;
+            info.RedirectStandardInput = true;
+            info.CreateNoWindow = true;
+            info.RedirectStandardError = true;
+            info.WorkingDirectory = "D:/Downloads/yt-dlp";
+
+            var vid = video;
+
+            await Task.Run(async () =>
+            {
+                var proc = Process.Start(info);
+
+                proc.StandardInput.WriteLine($"yt-dlp.exe --ffmpeg-location D:/Dokumente/PythonProjects/Youtube downloader (Abifeier)/ffmpeg -x --audio-format mp3 -P D:/Desktop/Video {vid.Url}");
+
+                proc.StandardInput.Close();
+                ArgumentNullException.ThrowIfNull(proc);
+                string output = proc.StandardOutput.ReadToEnd();
+                await proc.WaitForExitAsync();
+                Debug.WriteLine(output);
+  
+            });
+
         }
     }
 }
