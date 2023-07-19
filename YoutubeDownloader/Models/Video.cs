@@ -5,7 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace YoutubeDownloader.Models
-{
+{   
+    /// <summary>
+    /// Represents a Video that is in queue.
+    /// </summary>
     public class Video
     {
         public Guid Id { get; }
@@ -15,7 +18,10 @@ namespace YoutubeDownloader.Models
         public string Channel { get; }
         public string Thumbnail { get; }
 
-        public Video(string title, string url, int duration, string channel, string thumbnail)
+        public string FilePath { get; }
+        //TODO: Store all download options
+
+        public Video(string title, string url, int duration, string channel, string thumbnail, string filePath)
         {
             Id = Guid.NewGuid();
             Title = title;
@@ -23,9 +29,10 @@ namespace YoutubeDownloader.Models
             Duration = duration;
             Channel = channel;
             Thumbnail = thumbnail;
+            FilePath = filePath;
         }
 
-        public Video(Guid id, string title, string url, int duration, string channel, string thumbnail)
+        public Video(Guid id, string title, string url, int duration, string channel, string thumbnail, string filePath)
         {   
             Id = id;
             Title = title;
@@ -33,6 +40,7 @@ namespace YoutubeDownloader.Models
             Duration = duration;
             Channel = channel;
             Thumbnail = thumbnail;
+            FilePath = filePath;
         }
     }
 }
