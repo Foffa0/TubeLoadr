@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using YoutubeDownloader.DbContexts;
 using YoutubeDownloader.DTOs;
+using YoutubeDownloader.Migrations;
 using YoutubeDownloader.Services.VideoCreators;
 using YoutubeDownloader.Services.VideoProviders;
 using YoutubeDownloader.Services.yt_dlp;
@@ -27,7 +28,10 @@ namespace YoutubeDownloader.Models
         private readonly IVideoProvider _videoProvider;
 
         private readonly YtdlpDownloader _ytdlpDownloader;
+        private bool _isDownloading;
 
+        private List<Video> _downloadQueue;
+        public List<Video> DownloadQueue { get { return _downloadQueue; } set { _downloadQueue = value; } }
 
         public Downloader(IVideoProvider videoProvider, IVideoCreator videoCreator) 
         {   
@@ -35,6 +39,10 @@ namespace YoutubeDownloader.Models
             _videoCreator = videoCreator;
 
             _ytdlpDownloader = new YtdlpDownloader();
+
+            _isDownloading = false;
+
+            _downloadQueue = new List<Video>();
         }
 
         /// <summary>
@@ -60,40 +68,6 @@ namespace YoutubeDownloader.Models
         {
             await _videoCreator.DeleteVideo(downloadedVideo);
         }
-
-        public event Action<Video> VideoCreated;
-        public event Action<Video> VideoDeleted;
-        public event Action<DownloadedVideo> DownloadedVideoCreated;
-        public event Action<DownloadedVideo> DownloadedVideoDeleted;
-
-        public async Task AddToQueue(string url)
-        {
-            Video video = await _ytdlpDownloader.AddToQueue(url);
-
-            await AddVideoToQueue(video);
-            VideoCreated?.Invoke(video);
-        }
-
-        public async void DownloadVideo()
-        {
-            IEnumerable<Video> v = await GetQueuedVideos();
-            List<Video> videos = v.ToList();
-
-            await _ytdlpDownloader.DownloadVideo(videos.First());
-
-            await DeleteQueuedVideo(videos.First());
-            VideoDeleted?.Invoke(videos.First());
-
-            DownloadedVideo vid = new DownloadedVideo(videos.First().Title, videos.First().Url, videos.First().Duration, videos.First().Channel, videos.First().Thumbnail, videos.First().FilePath);
-            DownloadedVideoCreated?.Invoke(vid);
-
-            videos.Remove(videos.First());
-            if (videos.Count() > 0)
-            {
-                DownloadVideo();
-            }
-        }
-
         public async Task AddVideoToQueue(Video video)
         {
             await _videoCreator.CreateQueuedVideo(video);
@@ -102,6 +76,45 @@ namespace YoutubeDownloader.Models
         public async Task DeleteQueuedVideo(Video video)
         {
             await _videoCreator.DeleteQueuedVideo(video);
+        }
+
+
+        public event Action<Video> VideoCreated;
+        public event Action<Video> VideoDeleted;
+        public event Action<DownloadedVideo> DownloadedVideoCreated;
+        public event Action<DownloadedVideo> DownloadedVideoDeleted;
+
+
+        public async Task GetVideoInfo(string url)
+        {
+            Video video = await _ytdlpDownloader.AddToQueue(url);
+
+            await AddVideoToQueue(video);
+            VideoCreated?.Invoke(video);
+        }
+
+        public async void DownloadVideo()
+        {   
+            if (_isDownloading) { return; }
+
+            _isDownloading = true;
+
+            await _ytdlpDownloader.DownloadVideo(_downloadQueue.First());
+
+            DownloadedVideo vid = new DownloadedVideo(_downloadQueue.First().Title, _downloadQueue.First().Url, _downloadQueue.First().Duration, _downloadQueue.First().Channel, _downloadQueue.First().Thumbnail, _downloadQueue.First().FilePath);
+            
+            await DeleteQueuedVideo(_downloadQueue.First());
+            VideoDeleted?.Invoke(_downloadQueue.First());
+
+            await AddVideoToHistory(vid);
+            DownloadedVideoCreated?.Invoke(vid);
+
+            if (_downloadQueue.Count() > 0)
+            {
+                _isDownloading = false;
+                DownloadVideo();
+            }
+            _isDownloading = false;
         }
     }
 }
