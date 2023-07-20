@@ -24,11 +24,11 @@ namespace YoutubeDownloader.Commands
         }
 
         public override async Task ExecuteAsync(object parameter)
-        {
+        {   
+            _viewModel.IsLoading = true;
             try
             {
                 await _downloaderStore.Load();
-
                 _viewModel.UpdateVideos(_downloaderStore.DownloadQueue);
             
             }
@@ -37,6 +37,8 @@ namespace YoutubeDownloader.Commands
                 MessageBox.Show("Failed to load videos.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Debug.WriteLine(e);
             }
+
+            _viewModel.IsLoading = false;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,16 +24,18 @@ namespace YoutubeDownloader.Commands
 
         public override async Task ExecuteAsync(object parameter)
         {
+            _viewModel.IsLoading = true;
             try
             {
                 await _downloaderStore.Load();
-
                 _viewModel.UpdateVideos(_downloaderStore.Videos);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("Failed to load videos.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Debug.WriteLine(e);
             }
+            _viewModel.IsLoading = false;
         }
     }
 }

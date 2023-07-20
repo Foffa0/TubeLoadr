@@ -17,6 +17,19 @@ namespace YoutubeDownloader.ViewModels
 
         public IEnumerable<DownloadedVideoViewModel> VideosHistory => _videos;
 
+        private bool _isLoading;
+
+        public bool IsLoading
+        {
+            get { return _isLoading; }
+            set 
+            { 
+                _isLoading = value;
+                OnPropertyChanged(nameof(IsLoading));
+            }
+
+        }
+
         public ICommand LoadHistoryVideosCommand { get; }
         public ICommand LoadDownloadViewCommand { get; }
 
