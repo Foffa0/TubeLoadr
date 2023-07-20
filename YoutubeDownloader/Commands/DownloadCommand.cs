@@ -30,14 +30,14 @@ namespace YoutubeDownloader.Commands
 
         public override bool CanExecute(object? parameter)
         {
-            return !string.IsNullOrEmpty(_downloadViewModel.VideoUrl) && base.CanExecute(parameter);
+            return !string.IsNullOrEmpty(_downloadViewModel.VideoUrl) && !_downloadViewModel.HasErrors && base.CanExecute(parameter);
         }
 
         public override async Task ExecuteAsync(object parameter)
         {
             /*try
             {*/
-               await _downloader.DownloadVideo(_downloadViewModel.VideoUrl);
+               await _downloader.GetVideoInfo(_downloadViewModel.VideoUrl);
             _downloadViewModel.VideoUrl = "";
             /*}
             catch (Exception) 
