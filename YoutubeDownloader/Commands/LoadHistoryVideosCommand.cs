@@ -24,6 +24,7 @@ namespace YoutubeDownloader.Commands
 
         public override async Task ExecuteAsync(object parameter)
         {
+            _viewModel.ErrorMessage = string.Empty;
             _viewModel.IsLoading = true;
             try
             {
@@ -32,8 +33,7 @@ namespace YoutubeDownloader.Commands
             }
             catch (Exception e)
             {
-                MessageBox.Show("Failed to load videos.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Debug.WriteLine(e);
+                _viewModel.ErrorMessage = "Failed to load videos.";
             }
             _viewModel.IsLoading = false;
         }

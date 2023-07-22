@@ -7,7 +7,7 @@
         xmlns:views="clr-namespace:YoutubeDownloader.Views"
         xmlns:vms="clr-namespace:YoutubeDownloader.ViewModels"
         mc:Ignorable="d"
-        Title="YoutubeDownloader" Height="450" Width="800">
+        Title="YoutubeDownloader" Height="700" Width="1300">
     <Grid Margin="20 10">
         <Grid.Resources>
             <DataTemplate DataType="{x:Type vms:DownloadViewModel}">

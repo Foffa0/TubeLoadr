@@ -37,7 +37,8 @@ namespace YoutubeDownloader.Commands
         {
             /*try
             {*/
-               await _downloader.GetVideoInfo(_downloadViewModel.VideoUrl);
+            DownloadOptions downloadOptions = new DownloadOptions(_downloadViewModel.OutputDir);
+            await _downloader.GetVideoInfo(_downloadViewModel.VideoUrl, downloadOptions);
             _downloadViewModel.VideoUrl = "";
             /*}
             catch (Exception) 

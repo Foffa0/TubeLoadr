@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using YoutubeDownloader.Commands;
 using YoutubeDownloader.Models;
@@ -20,6 +22,7 @@ namespace YoutubeDownloader.ViewModels
     {
         private readonly DownloaderStore _downloaderStore;
 
+        //Video infos
         private string _videoUrl;
         public string VideoUrl
         {
@@ -42,10 +45,39 @@ namespace YoutubeDownloader.ViewModels
             }
         }
 
+        private string _outputDir;
+        public string OutputDir
+        {
+            get { return _outputDir; }
+            set
+            {
+                _outputDir = value;
+                OnPropertyChanged(nameof(OutputDir));
+            }
+        }
+
 
         private readonly ObservableCollection<VideoViewModel> _videos;
 
         public IEnumerable<VideoViewModel> Videos => _videos;
+
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get 
+            {
+                return _errorMessage;
+            }
+            set
+            {
+                _errorMessage = value; 
+                OnPropertyChanged(nameof(ErrorMessage));
+                OnPropertyChanged(nameof(HasErrorMessage));
+            }
+
+        }
+
+        public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
         private readonly Dictionary<string, List<string>> _propertyNameToErrorsDictionary;
 
@@ -67,6 +99,7 @@ namespace YoutubeDownloader.ViewModels
         public ICommand DownloadHistoryCommand { get; }
         public ICommand AboutCommand { get; }
         public ICommand LoadQueuedVideosCommand { get; }
+        public ICommand CommonOpenFileDialogCommand { get; }
 
         public DownloadViewModel(DownloaderStore downloaderStore, NavigationService aboutViewNavigationService, NavigationService downloadHistoryNavigationService)
         {
@@ -75,6 +108,7 @@ namespace YoutubeDownloader.ViewModels
             DownloadCommand = new DownloadCommand(_downloaderStore, _downloaderStore.Downloader, this);
             DownloadHistoryCommand = new NavigateCommand(downloadHistoryNavigationService);
             AboutCommand = new NavigateCommand(aboutViewNavigationService);
+            CommonOpenFileDialogCommand = new RelayCommand(o => SelectOutputFolder());
 
             LoadQueuedVideosCommand = new LoadQueuedVideosCommand(this, downloaderStore);
 
@@ -84,6 +118,8 @@ namespace YoutubeDownloader.ViewModels
             _downloaderStore.QueuedVideoDeleted += OnVideoDeleted;
 
             _propertyNameToErrorsDictionary = new Dictionary<string, List<string>>();
+
+            _outputDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
 
@@ -123,6 +159,22 @@ namespace YoutubeDownloader.ViewModels
             {
                 VideoViewModel v = new VideoViewModel(video);
                 _videos.Add(v);
+            }
+        }
+
+
+        // Download options
+
+        public void SelectOutputFolder()
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            dialog.IsFolderPicker = true;
+            dialog.Multiselect = false;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                _outputDir = dialog.FileName;
+                OnPropertyChanged(nameof(OutputDir));
             }
         }
 

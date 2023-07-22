@@ -11,7 +11,7 @@ namespace YoutubeDownloader.Stores
     public class DownloaderStore
     {
         private readonly Downloader _downloader;
-        private readonly Lazy<Task> _initializeLazy;
+        private Lazy<Task> _initializeLazy;
         private readonly List<DownloadedVideo> _videos;
         private readonly List<Video> _downloadQueue;
 
@@ -42,7 +42,15 @@ namespace YoutubeDownloader.Stores
 
         public async Task Load()
         {
-            await _initializeLazy.Value;
+            try
+            {
+                await _initializeLazy.Value;
+            }
+            catch (Exception)
+            {
+                _initializeLazy = new Lazy<Task>(Initialize);
+                throw;
+            }
         }
 
 
@@ -51,12 +59,14 @@ namespace YoutubeDownloader.Stores
             _downloadQueue.Add(video);
             QueuedVideoCreated?.Invoke(video);
 
+            _downloader.DownloadQueue = _downloadQueue;
             _downloader.DownloadVideo();
         }
 
         private void OnVideoRemovedFromQueue(Video video)
         {
             _downloadQueue.Remove(_downloadQueue.Where(i => i.Id == video.Id).Single());
+            _downloader.DownloadQueue = _downloadQueue;
             QueuedVideoDeleted?.Invoke(video);
         }
 
@@ -105,7 +115,6 @@ namespace YoutubeDownloader.Stores
             IEnumerable<Video> queuedVideos = await _downloader.GetQueuedVideos();
             _downloadQueue.Clear();
             _downloadQueue.AddRange(queuedVideos);
-
         }
     }
 }

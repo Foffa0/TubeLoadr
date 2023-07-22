@@ -15,7 +15,7 @@ namespace YoutubeDownloader.Services.yt_dlp
     public class YtdlpDownloader
     {
 
-        public async Task<Video> AddToQueue(string url)
+        public async Task<Video> AddToQueue(string url, DownloadOptions downloadOptions)
         {
             ProcessStartInfo info = new ProcessStartInfo("cmd");
             info.UseShellExecute = false;
@@ -93,7 +93,7 @@ namespace YoutubeDownloader.Services.yt_dlp
                 Debug.Write(thumbnailUrl);
 
 
-                Video video = new Video(metadata.GetValueOrDefault("title").ToString(), metadata.GetValueOrDefault("webpage_url").ToString(), int.Parse(metadata.GetValueOrDefault("duration").ToString()), metadata.GetValueOrDefault("channel").ToString(), thumbnailUrl, "D:/Desktop/Video");
+                Video video = new Video(metadata.GetValueOrDefault("title").ToString(), metadata.GetValueOrDefault("webpage_url").ToString(), int.Parse(metadata.GetValueOrDefault("duration").ToString()), metadata.GetValueOrDefault("channel").ToString(), thumbnailUrl, downloadOptions.OutputDir);
                 return video;
             });
             return video;
@@ -116,7 +116,7 @@ namespace YoutubeDownloader.Services.yt_dlp
             {
                 var proc = Process.Start(info);
 
-                proc.StandardInput.WriteLine($"yt-dlp.exe --ffmpeg-location D:/Dokumente/PythonProjects/Youtube downloader (Abifeier)/ffmpeg -x --audio-format mp3 -P D:/Desktop/Video {vid.Url}");
+                proc.StandardInput.WriteLine($"yt-dlp.exe --ffmpeg-location D:/Dokumente/PythonProjects/Youtube downloader (Abifeier)/ffmpeg -x --audio-format mp3 -P {vid.FilePath} {vid.Url}");
 
                 proc.StandardInput.Close();
                 ArgumentNullException.ThrowIfNull(proc);

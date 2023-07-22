@@ -7,6 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
@@ -14,49 +15,75 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
+        <TextBlock Grid.Row="0" HorizontalAlignment="Center">Youtube url</TextBlock>
         <TextBox Grid.Row="0" Width="500" Height="20" Text="{Binding VideoUrl, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0" Width="100"  Height="40" Command="{Binding CommonOpenFileDialogCommand}">Output Location</Button>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding OutputDir}"></TextBlock>
+
+        </Grid>
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Button Width="80" Height="40" Command="{Binding DownloadCommand}">Download</Button>
             <Button Width="80" Height="40" Command="{Binding DownloadHistoryCommand}">Download History</Button>
             <Button Width="80" Height="40" Command="{Binding AboutCommand}">About</Button>
         </StackPanel>
 
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
 
             <loadingspinnercontrol:LoadingSpinner Thickness="5" Color="Gray" Diameter="100" IsLoading="{Binding IsLoading}"/>
 
-            <ListView ItemsSource="{Binding Videos}" Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Thumbnail">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Image Source="{Binding Thumbnail}" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+            <Grid Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
 
-                        <GridViewColumn Header="Title">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Title}" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                <TextBlock
+                    Foreground="Red"
+                    Text="{Binding ErrorMessage}"
+                    Visibility="{Binding HasErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-                        <GridViewColumn Header="Length">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Duration}" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+                <ListView ItemsSource="{Binding Videos}" Visibility="{Binding HasErrorMessage, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Thumbnail">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Thumbnail}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Title">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Title}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Length">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Duration}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>
