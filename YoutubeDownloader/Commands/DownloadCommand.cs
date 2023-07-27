@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,8 +38,12 @@ namespace YoutubeDownloader.Commands
         {
             /*try
             {*/
-            DownloadOptions downloadOptions = new DownloadOptions(_downloadViewModel.OutputDir);
-            await _downloader.GetVideoInfo(_downloadViewModel.VideoUrl, downloadOptions);
+            string resolution = _downloadViewModel.IsVideoFormat ? _downloadViewModel.ResolutionVideo : _downloadViewModel.ResolutionAudio.ToString();
+
+
+            DownloadOptions downloadOptions = new DownloadOptions(_downloadViewModel.OutputDir, _downloadViewModel.Format, _downloadViewModel.TimestampStart, _downloadViewModel.TimestampEnd, resolution);
+            
+            await _downloader.GetVideoInfoAndAddToQueue(_downloadViewModel.VideoUrl, downloadOptions);
             _downloadViewModel.VideoUrl = "";
             /*}
             catch (Exception) 

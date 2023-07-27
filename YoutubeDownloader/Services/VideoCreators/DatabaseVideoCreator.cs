@@ -74,6 +74,8 @@ namespace YoutubeDownloader.Services.VideoCreators
                 Channel = video.Channel,
                 Thumbnail = video.Thumbnail,
                 FilePath = video.FilePath,
+                Format = video.Format,
+                Resolution = video.Resolution,
             };
         }
 

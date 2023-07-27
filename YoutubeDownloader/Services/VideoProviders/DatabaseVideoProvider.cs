@@ -41,7 +41,7 @@ namespace YoutubeDownloader.Services.VideoProviders
 
         private static Video ToVideo(VideoDTO r)
         {
-            return new Video(r.Id, r.Title, r.Url, r.Duration, r.Channel, r.Thumbnail, r.FilePath);
+            return new Video(r.Id, r.Title, r.Url, r.Duration, r.Channel, r.Thumbnail, r.FilePath, r.Format, r.StartTime, r.EndTime, r.Resolution);
         }
 
         private static DownloadedVideo ToDownloadedVideo(DownloadedVideoDTO r)

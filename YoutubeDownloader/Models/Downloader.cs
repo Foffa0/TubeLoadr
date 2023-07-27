@@ -85,7 +85,7 @@ namespace YoutubeDownloader.Models
         public event Action<DownloadedVideo> DownloadedVideoDeleted;
 
 
-        public async Task GetVideoInfo(string url, DownloadOptions options)
+        public async Task GetVideoInfoAndAddToQueue(string url, DownloadOptions options)
         {
             Video video = await _ytdlpDownloader.AddToQueue(url, options);
 
@@ -93,8 +93,15 @@ namespace YoutubeDownloader.Models
             VideoCreated?.Invoke(video);
         }
 
+        public async Task<VideoInfo> GetVideoInfo(string url)
+        {
+            VideoInfo video = await _ytdlpDownloader.GetVideoInfo(url);
+
+            return video;
+        }
+
         public async void DownloadVideo()
-        {   
+        {
             if (_isDownloading) { return; }
 
             _isDownloading = true;

@@ -19,9 +19,12 @@ namespace YoutubeDownloader.Models
         public string Thumbnail { get; }
 
         public string FilePath { get; }
-        //TODO: Store all download options
+        public string Format { get; }
+        public int StartTime { get; }
+        public int EndTime { get; }
+        public string Resolution { get; }
 
-        public Video(string title, string url, int duration, string channel, string thumbnail, string filePath)
+        public Video(string title, string url, int duration, string channel, string thumbnail, string filePath, string format, int startTime, int endTime, string resolution)
         {
             Id = Guid.NewGuid();
             Title = title;
@@ -30,9 +33,13 @@ namespace YoutubeDownloader.Models
             Channel = channel;
             Thumbnail = thumbnail;
             FilePath = filePath;
+            Format = format;
+            StartTime = startTime;
+            EndTime = endTime;
+            Resolution = resolution;
         }
 
-        public Video(Guid id, string title, string url, int duration, string channel, string thumbnail, string filePath)
+        public Video(Guid id, string title, string url, int duration, string channel, string thumbnail, string filePath, string format, int startTime, int endTime, string resolution)
         {   
             Id = id;
             Title = title;
@@ -41,6 +48,10 @@ namespace YoutubeDownloader.Models
             Channel = channel;
             Thumbnail = thumbnail;
             FilePath = filePath;
+            Format = format;
+            StartTime = startTime;
+            EndTime = endTime;
+            Resolution = resolution;
         }
     }
 }
