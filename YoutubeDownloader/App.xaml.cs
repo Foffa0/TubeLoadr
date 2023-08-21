@@ -54,7 +54,7 @@ namespace YoutubeDownloader
 
             MainWindow = new MainWindow()
             {
-                DataContext = new MainViewModel(_navigationStore)
+                DataContext = new MainViewModel(_navigationStore, new NavigationService(_navigationStore, CreateDownloadViewModel), new NavigationService(_navigationStore, CreateDownloadHistoryViewModel), new NavigationService(_navigationStore, CreateAboutViewModel))
             };
             MainWindow.Show();
 
@@ -63,7 +63,7 @@ namespace YoutubeDownloader
 
         private DownloadViewModel CreateDownloadViewModel()
         {
-            return DownloadViewModel.LoadViewModel(_downloaderStore, new NavigationService(_navigationStore, CreateDownloadHistoryViewModel), new NavigationService(_navigationStore, CreateAboutViewModel));
+            return DownloadViewModel.LoadViewModel(_downloaderStore);
         }
 
         private DownloadHistoryViewModel CreateDownloadHistoryViewModel()

@@ -7,21 +7,62 @@
         xmlns:views="clr-namespace:YoutubeDownloader.Views"
         xmlns:vms="clr-namespace:YoutubeDownloader.ViewModels"
         mc:Ignorable="d"
-        Title="YoutubeDownloader" Height="700" Width="1300">
-    <Grid Margin="20 10">
+        Height="700" Width="1300"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        FontFamily="/Fonts/#Poppins"
+        MinHeight="300"
+        MinWidth="500">
+
+
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome     
+        CaptionHeight="1"  
+        CornerRadius ="0"
+        ResizeBorderThickness="4"         
+        GlassFrameThickness="0">
+        </WindowChrome>
+    </WindowChrome.WindowChrome>
+
+    <Grid Background="{StaticResource WindowThemeDark}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="75" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
         <Grid.Resources>
-            <DataTemplate DataType="{x:Type vms:DownloadViewModel}">
-                <views:DownloadView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vms:AboutViewModel}">
-                <views:AboutView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vms:DownloadHistoryViewModel}">
-                <views:DownloadHistoryView />
-            </DataTemplate>
+
         </Grid.Resources>
 
-        <ContentControl Content="{Binding CurrentViewModel}" />
+        <Border Grid.ColumnSpan="2" MouseDown="Border_MouseDown">
+            <Grid HorizontalAlignment="Stretch">
+                <Label Content="Y-Downloader" Foreground="Gray" FontWeight="SemiBold"/>
 
+                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Stretch" Orientation="Horizontal">
+                    <Button x:Name="minimizeBtn" Width="40" VerticalAlignment="Stretch" Content="🗕" Padding="0,0,0,5" Style="{StaticResource TitleBarButtonTheme}" Click="Button_Minimize_Click"/>
+                    <Button Width="40" Content="☐" Style="{StaticResource TitleBarButtonTheme}" Click="WindowStateButton_Click" />
+                    <Button Width="40" Content="✕" Style="{StaticResource TitleBarButtonTheme}" Click="CloseButton_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+
+        <TextBlock Text="YDownloader" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" FontSize="22" FontFamily="/Fonts/#Poppins"  Margin="20,0,0,0"/>
+
+        <StackPanel Grid.Row="2" Grid.Column="0">
+            <RadioButton Content="Download" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MenuButtonTheme}" Command="{Binding DownloadCommand}" IsChecked="True"/>
+            <RadioButton Content="History" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MenuButtonTheme}" Command="{Binding DownloadHistoryCommand}"/>
+            <RadioButton Content="About" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MenuButtonTheme}" Command="{Binding AboutCommand}"/>
+        </StackPanel>
+
+        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Background="{StaticResource WindowTheme}">
+            <ContentControl  Content="{Binding CurrentViewModel}" Margin="10" />
+        </Border>
     </Grid>
 </Window>
