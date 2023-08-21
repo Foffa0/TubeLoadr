@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using YoutubeDownloader.Models;
-using YoutubeDownloader.Services;
 using YoutubeDownloader.Stores;
 using YoutubeDownloader.ViewModels;
 
@@ -31,7 +25,7 @@ namespace YoutubeDownloader.Commands
 
         public override bool CanExecute(object? parameter)
         {
-            return !string.IsNullOrEmpty(_downloadViewModel.VideoUrl) && !_downloadViewModel.HasErrors && base.CanExecute(parameter);
+            return !string.IsNullOrEmpty(_downloadViewModel.VideoUrl) && !_downloadViewModel.HasErrors && !string.IsNullOrEmpty(_downloadViewModel.Format) && _downloadViewModel.ResolutionAudio != null || !string.IsNullOrEmpty(_downloadViewModel.ResolutionVideo) && !string.IsNullOrEmpty(_downloadViewModel.OutputDir) && base.CanExecute(parameter);
         }
 
         public override async Task ExecuteAsync(object parameter)
@@ -56,7 +50,7 @@ namespace YoutubeDownloader.Commands
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(DownloadViewModel.VideoUrl))
+            if (e.PropertyName == nameof(DownloadViewModel.VideoUrl) || e.PropertyName == nameof(DownloadViewModel.Format) || e.PropertyName == nameof(DownloadViewModel.ResolutionVideo) || e.PropertyName == nameof(DownloadViewModel.ResolutionAudio) || e.PropertyName == nameof(DownloadViewModel.OutputDir))
             {
                 OnCanExecuteChanged();
             }
