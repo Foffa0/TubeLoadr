@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Folder Include="Exceptions\" />
+    <Folder Include="Fonts\" />
   </ItemGroup>
 
   <ItemGroup>
