@@ -9,12 +9,12 @@ using System.Windows;
 
 namespace YoutubeDownloader.Converters
 {
-    public class NullToIsEnabledConverter : IValueConverter
+    internal class InverseNullToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) return false;
-            return true;
+        if (value == null) return Visibility.Visible;
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
