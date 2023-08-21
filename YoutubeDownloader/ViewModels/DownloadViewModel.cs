@@ -1,19 +1,13 @@
-﻿using Microsoft.VisualBasic;
-using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using YoutubeDownloader.Commands;
 using YoutubeDownloader.Models;
-using YoutubeDownloader.Services;
 using YoutubeDownloader.Stores;
 
 namespace YoutubeDownloader.ViewModels
@@ -22,7 +16,7 @@ namespace YoutubeDownloader.ViewModels
     {
         private readonly DownloaderStore _downloaderStore;
 
-        //Video infos
+    // Download options
         private string _videoUrl;
         public string VideoUrl
         {
@@ -40,6 +34,11 @@ namespace YoutubeDownloader.ViewModels
                 {
                     AddError("Invalid link! Only YouTube links are allowed.", nameof(VideoUrl));
                 }
+                if (string.IsNullOrEmpty(value))
+                {
+                    VideoTemp = null;
+                    OnPropertyChanged(nameof(VideoTemp));
+                }
 
                 OnPropertyChanged(nameof(VideoUrl));
             }
@@ -54,6 +53,132 @@ namespace YoutubeDownloader.ViewModels
                 _outputDir = value;
                 OnPropertyChanged(nameof(OutputDir));
             }
+        }
+
+        private List<string> _availableFormats = new() { "mp3", "wav", "mp4", "webm", "ogg", "mkv" };
+        public List<string> AvailableFormats
+        { get { return _availableFormats; } }
+
+
+        private string _format;
+        public string Format
+        {
+            get { return _format; }
+            set
+            {
+                _format = value;
+                OnPropertyChanged(nameof(Format));
+
+                if (_format == "mp3" || _format == "wav")
+                {
+                    _isVideoFormat = false;
+                    _reslutionVideo = string.Empty;
+                    OnPropertyChanged(nameof(ResolutionVideo));
+                } 
+                else
+                {
+                    _isVideoFormat = true;
+                    _reslutionAudio = null;
+                    OnPropertyChanged(nameof(ResolutionAudio));
+                }
+                OnPropertyChanged(nameof(IsVideoFormat));
+            }
+        }
+
+        private bool _isVideoFormat;
+        public bool IsVideoFormat
+        {
+            get { return _isVideoFormat; }
+            set 
+            {
+                _isVideoFormat = value;
+                OnPropertyChanged(nameof(IsVideoFormat));
+            }
+        }
+
+        private int _timestampStart;
+        public int TimestampStart
+        {
+            get { return _timestampStart; }
+            set
+            {
+                _timestampStart = value;
+                OnPropertyChanged(nameof(TimestampStart));
+            }
+        }
+
+        private int _timestampEnd;
+        public int TimestampEnd
+        {
+            get { return _timestampEnd; }
+            set
+            {
+                _timestampEnd = value;
+                OnPropertyChanged(nameof(TimestampEnd));
+            }
+        }
+
+        private int _videoLength;
+        public int VideoLength
+        {
+            get { return _videoLength; }
+            set
+            {
+                _videoLength = value;
+                OnPropertyChanged(nameof(VideoLength));
+            }
+        }
+
+        private List<string> _availableResolutionsVideo;
+        public List<string> AvailableResolutionsVideo
+        { get { return _availableResolutionsVideo; } }
+
+        private string _reslutionVideo;
+        public string ResolutionVideo
+        {
+            get { return _reslutionVideo; }
+            set
+            {
+                _reslutionVideo = value;
+                OnPropertyChanged(nameof(ResolutionVideo));
+            }
+        }
+
+        private List<int> _availableResolutionsAudio;
+        public List<int> AvailableResolutionsAudio
+        { get { return _availableResolutionsAudio; } }
+
+        private int? _reslutionAudio;
+        public int? ResolutionAudio
+        {
+            get { return _reslutionAudio; }
+            set
+            {
+                _reslutionAudio = value;
+                OnPropertyChanged(nameof(ResolutionAudio));
+            }
+        }
+
+        // Video that belongs to the currently entered url (before pressing download btn)
+        private VideoInfo? _videoTemp;
+        public VideoInfo? VideoTemp
+        {
+            get
+            {
+                return _videoTemp;
+            }
+            set
+            {
+                _videoTemp = value;
+                OnPropertyChanged(nameof(VideoTemp));
+            }
+        }
+
+        private bool _isLoadingVideoTemp;
+        public bool IsLoadingVideoTemp
+        {
+            get { return _isLoadingVideoTemp; }
+            set { _isLoadingVideoTemp = value; OnPropertyChanged(nameof(IsLoadingVideoTemp));}
         }
 
 
@@ -96,18 +221,16 @@ namespace YoutubeDownloader.ViewModels
         }
 
         public ICommand DownloadCommand { get; }
-        public ICommand DownloadHistoryCommand { get; }
-        public ICommand AboutCommand { get; }
         public ICommand LoadQueuedVideosCommand { get; }
         public ICommand CommonOpenFileDialogCommand { get; }
+        public ICommand CmbFormats_SelectionChangedCommand { get; }
 
-        public DownloadViewModel(DownloaderStore downloaderStore, NavigationService aboutViewNavigationService, NavigationService downloadHistoryNavigationService)
+        public DownloadViewModel(DownloaderStore downloaderStore)
         {
             _downloaderStore = downloaderStore;
 
             DownloadCommand = new DownloadCommand(_downloaderStore, _downloaderStore.Downloader, this);
-            DownloadHistoryCommand = new NavigateCommand(downloadHistoryNavigationService);
-            AboutCommand = new NavigateCommand(aboutViewNavigationService);
+
             CommonOpenFileDialogCommand = new RelayCommand(o => SelectOutputFolder());
 
             LoadQueuedVideosCommand = new LoadQueuedVideosCommand(this, downloaderStore);
@@ -120,8 +243,47 @@ namespace YoutubeDownloader.ViewModels
             _propertyNameToErrorsDictionary = new Dictionary<string, List<string>>();
 
             _outputDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            _timestampStart = 10;
+            IsVideoFormat = true;
+            _videoTemp = null;
+            OnPropertyChanged(nameof(VideoTemp));
+            _isLoadingVideoTemp = false;
+
+            this.PropertyChanged += ViewModel_PropertyChanged;
         }
 
+        private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "VideoUrl":
+                    if (((IEnumerable<string>)GetErrors(nameof(VideoUrl))).Any() || VideoUrl.Length < 1) 
+                    {
+                        VideoTemp = null;
+                        return;
+                    }
+
+                    _isLoadingVideoTemp = true;
+                    OnPropertyChanged(nameof(IsLoadingVideoTemp));
+
+                    VideoTemp = await _downloaderStore.Downloader.GetVideoInfo(_videoUrl);
+                    OnPropertyChanged(nameof(VideoTemp));
+                    _timestampStart = 0;
+                    OnPropertyChanged(nameof(TimestampStart));
+                    _timestampEnd = _videoTemp.Duration;
+                    OnPropertyChanged(nameof(TimestampEnd));
+                    _videoLength = _videoTemp.Duration;
+                    OnPropertyChanged(nameof(VideoLength));
+                    _availableResolutionsVideo = _videoTemp.AvailableResolutionsVideo;
+                    OnPropertyChanged(nameof(AvailableResolutionsVideo));
+                    _availableResolutionsAudio = _videoTemp.AvailableResolutionsAudio;
+                    OnPropertyChanged(nameof(AvailableResolutionsAudio));
+
+                    _isLoadingVideoTemp = false;
+                    OnPropertyChanged(nameof(IsLoadingVideoTemp));
+                    break;
+            }
+        }
 
         public override void Dispose()
         {
@@ -130,9 +292,9 @@ namespace YoutubeDownloader.ViewModels
             base.Dispose();
         }
 
-        public static DownloadViewModel LoadViewModel(DownloaderStore downloaderStore, NavigationService downloadViewNavigationService, NavigationService aboutViewNavigationService)
+        public static DownloadViewModel LoadViewModel(DownloaderStore downloaderStore)
         {
-            DownloadViewModel viewModel = new DownloadViewModel(downloaderStore, aboutViewNavigationService, downloadViewNavigationService);
+            DownloadViewModel viewModel = new DownloadViewModel(downloaderStore);
             viewModel.LoadQueuedVideosCommand.Execute(null);
             return viewModel;
         }
@@ -177,7 +339,6 @@ namespace YoutubeDownloader.ViewModels
                 OnPropertyChanged(nameof(OutputDir));
             }
         }
-
 
         // Input validation
 
