@@ -14,103 +14,124 @@
         <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
         <converters:IntToTimestampConverter x:Key="IntToTimestampConverter" />
         <converters:NullToIsEnabledConverter x:Key="NullToIsEnabledConverter" />
+        <converters:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter" />
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="150" />
             <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" HorizontalAlignment="Center">Youtube url</TextBlock>
-        <TextBox Grid.Row="0" Width="500" Height="20" Text="{Binding VideoUrl, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsLoadingVideoTemp, Converter={StaticResource InverseBooleanConverter}}"></TextBox>
+        <TextBox Grid.Row="0" Width="600" Height="30" VerticalContentAlignment="Center" Text="{Binding VideoUrl, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsLoadingVideoTemp, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource RoundedTextbox}" />
 
         <loadingspinnercontrol:LoadingSpinner Grid.Row="1" HorizontalAlignment="Center" Thickness="5" Color="Gray" Diameter="100" IsLoading="{Binding IsLoadingVideoTemp}"/>
-        
-        <StackPanel Height="80" Grid.Row="1" HorizontalAlignment="Center" Orientation="Horizontal" DataContext="{Binding VideoTemp, UpdateSourceTrigger=PropertyChanged}">
-            <Image Source="{Binding Thumbnail, UpdateSourceTrigger=PropertyChanged}" />
-            <StackPanel Orientation="Vertical">
-                <TextBlock Text="{Binding Title}"/>
-                <TextBlock Text="{Binding Channel}"/>
-            </StackPanel>
-        </StackPanel>
 
-        <Grid Grid.Row="2" IsEnabled="{Binding VideoTemp, Converter={StaticResource NullToIsEnabledConverter}}">
+        <Border Grid.Row="1" CornerRadius="5" BorderThickness="1" BorderBrush="{StaticResource SecondaryColor}" MaxWidth="500" MaxHeight="100" VerticalAlignment="Center">
+            <Grid>
+                <StackPanel HorizontalAlignment="Stretch"  Orientation="Horizontal" DataContext="{Binding VideoTemp, UpdateSourceTrigger=PropertyChanged}" >
+                    <Image Source="{Binding Thumbnail, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="0,0,15, 0" Visibility="{Binding Title, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullToVisibilityConverter}}"/>
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Center" Visibility="{Binding Title, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullToVisibilityConverter}}">
+                        <TextBlock Text="{Binding Title}" Style="{StaticResource LabelTextBlockTheme}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Channel}" Style="{StaticResource LabelTextBlockTheme}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Preview" FontSize="25" FontWeight="Bold" Foreground="{StaticResource SecondaryColor}" Visibility="{Binding VideoTemp, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseNullToVisibilityConverter}}"/>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="2" Margin="50,0,50,50" MaxWidth="1000">
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="230"/>
+                <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition/>
+                <ColumnDefinition Width="1"/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-
-            <Button Grid.Row="0" Grid.Column="0" Width="100"  Height="40" Command="{Binding CommonOpenFileDialogCommand}">Output Location</Button>
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding OutputDir}"></TextBlock>
-
-            <ComboBox Grid.Row="1" Grid.Column="0" Height="20" ItemsSource="{Binding AvailableFormats}" SelectedItem="{Binding Format}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Format}"></TextBlock>
-
             
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Download Settings" FontSize="18" FontWeight="Regular" Margin="0,0,0,30" Style="{StaticResource LabelTextBlockTheme}"/>
+            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Right" IsEnabled="{Binding VideoTemp, Converter={StaticResource NullToIsEnabledConverter}}" Width="400" Margin="0,0,20,0"> 
 
-            <xctk:RangeSlider Grid.Row="2" Grid.Column="0" Minimum="0" Maximum="{Binding VideoLength}" Step="1" LowerValue="{Binding TimestampStart}" HigherValue="{Binding TimestampEnd}" RangeBackground="OrangeRed" />
-            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
-                <TextBlock Text="{Binding TimestampStart, Converter={StaticResource IntToTimestampConverter}}" />
-                <TextBlock Text=" - " />
-                <TextBlock Text="{Binding TimestampEnd, Converter={StaticResource IntToTimestampConverter}}" />
+                <TextBlock Text="Output Directory" Style="{StaticResource LabelTextBlockTheme}"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,20">
+                    <TextBlock Text="{Binding OutputDir}" Style="{StaticResource LabelTextBlockTheme}" Foreground="Gray" FontWeight="Medium" VerticalAlignment="Center" Margin="50,0,50,0"/>
+                    <Button Width="100"  Height="40" Command="{Binding CommonOpenFileDialogCommand}" VerticalAlignment="Center" Style="{StaticResource RoundedButtonTheme}">Change</Button>
+                </StackPanel>
+
+                <TextBlock Text="Filename" Style="{StaticResource LabelTextBlockTheme}"/>
             </StackPanel>
 
-            <ComboBox Grid.Row="3" Grid.Column="0" Height="20" Visibility="{Binding IsVideoFormat, Converter={StaticResource BooleanToVisibilityConverter}}" ItemsSource="{Binding AvailableResolutionsVideo}" SelectedItem="{Binding ResolutionVideo}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-            <TextBlock Grid.Row="3" Grid.Column="1" Visibility="{Binding IsVideoFormat, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding ResolutionVideo}"></TextBlock>
-            
-            <ComboBox Grid.Row="3" Grid.Column="0" Height="20" Visibility="{Binding IsVideoFormat, Converter={StaticResource InverseBooleanToVisibilityConverter}}" ItemsSource="{Binding AvailableResolutionsAudio}" SelectedItem="{Binding ResolutionAudio}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock>
-                                <TextBlock.Text>
-                                    <Binding Path="">
-                                        <Binding.StringFormat>
-                                            {0} kbit/s
-                                        </Binding.StringFormat>
-                                    </Binding>
-                                </TextBlock.Text>
-                            </TextBlock>
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-            <TextBlock Grid.Row="3" Grid.Column="1" Visibility="{Binding IsVideoFormat, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Text="{Binding ResolutionAudio}"></TextBlock>
+            <Border Grid.Column="1" Grid.Row="1" Background="{StaticResource SecondaryColor}"/>
+
+            <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Left" IsEnabled="{Binding VideoTemp, Converter={StaticResource NullToIsEnabledConverter}}" Width="400" Margin="20,0,0,0">
+                <TextBlock Text="Video Format" Style="{StaticResource LabelTextBlockTheme}"/>
+                <ComboBox Height="20" ItemsSource="{Binding AvailableFormats}" SelectedItem="{Binding Format}" Margin="0,0,0,20" Style="{StaticResource ComboBoxTheme }" />
+
+                <TextBlock Text="Video Resolution" Style="{StaticResource LabelTextBlockTheme}"/>
+
+                <ComboBox Height="20" Visibility="{Binding IsVideoFormat, Converter={StaticResource BooleanToVisibilityConverter}}" ItemsSource="{Binding AvailableResolutionsVideo}" SelectedItem="{Binding ResolutionVideo}" Style="{StaticResource ComboBoxTheme}" />
+
+                <TextBlock Visibility="{Binding IsVideoFormat, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding ResolutionVideo}"></TextBlock>
+
+                <ComboBox Height="20" Visibility="{Binding IsVideoFormat, Converter={StaticResource InverseBooleanToVisibilityConverter}}" ItemsSource="{Binding AvailableResolutionsAudio}" SelectedItem="{Binding ResolutionAudio}" Style="{StaticResource ComboBoxTheme}" Margin="0,0,0,15">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <Binding Path="">
+                                            <Binding.StringFormat>
+                                                {0} kbit/s
+                                            </Binding.StringFormat>
+                                        </Binding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsHighlighted" Value="true">
+                                    <Setter Property="Background" Value="#FF4F4F4F"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#FF4F4F4F"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#FF4F4F4F"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Foreground" Value="#888888"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
+
+                <TextBlock Text="Video Duration" Style="{StaticResource LabelTextBlockTheme}" />
+
+                <xctk:RangeSlider Minimum="0" Maximum="{Binding VideoLength}" Step="1" LowerValue="{Binding TimestampStart}" HigherValue="{Binding TimestampEnd}" RangeBackground="{StaticResource PrimaryColor}" HigherThumbBackground="{StaticResource SecondaryColorLight}" LowerThumbBackground="{StaticResource SecondaryColorLight}"/>
+
+                <DockPanel HorizontalAlignment="Stretch">
+                    <TextBlock DockPanel.Dock="Left" Text="{Binding TimestampStart, Converter={StaticResource IntToTimestampConverter}}" Style="{StaticResource LabelTextBlockTheme}" HorizontalAlignment="Left"/>
+                    <TextBlock DockPanel.Dock="Right" Text="{Binding TimestampEnd, Converter={StaticResource IntToTimestampConverter}}" Style="{StaticResource LabelTextBlockTheme}" HorizontalAlignment="Right"/>
+                </DockPanel>
+
+            </StackPanel>
+
+            <Button Grid.Row="2" Grid.ColumnSpan="3" Width="150" Height="43" Command="{Binding DownloadCommand}" Style="{StaticResource RoundedButtonTheme}">Download</Button>
         </Grid>
-        
-        <StackPanel Grid.Row="3" Orientation="Horizontal">
-            <Button Width="80" Height="40" Command="{Binding DownloadCommand}">Download</Button>
-            <Button Width="80" Height="40" Command="{Binding DownloadHistoryCommand}">Download History</Button>
-            <Button Width="80" Height="40" Command="{Binding AboutCommand}">About</Button>
-        </StackPanel>
 
-
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="3">
 
             <loadingspinnercontrol:LoadingSpinner Thickness="5" Color="Gray" Diameter="100" IsLoading="{Binding IsLoading}"/>
 
@@ -120,6 +141,19 @@
                     Foreground="Red"
                     Text="{Binding ErrorMessage}"
                     Visibility="{Binding HasErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <ItemsControl Width="300" Height="300" Background="AliceBlue" ItemsSource="{Binding Videos}">
+                    <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <WrapPanel>
+                            <TextBlock Text="{Binding Title}" FontWeight="Bold" />
+                            <TextBlock Text=" "/>
+                            <TextBlock Text="{Binding Duration}"/>
+                        </WrapPanel>
+                    </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
 
                 <ListView ItemsSource="{Binding Videos}" Visibility="{Binding HasErrorMessage, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                     <ListView.View>
