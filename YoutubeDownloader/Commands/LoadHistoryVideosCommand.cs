@@ -24,6 +24,7 @@ namespace YoutubeDownloader.Commands
 
         public override async Task ExecuteAsync(object parameter)
         {
+            await Task.Delay(10);
             _viewModel.ErrorMessage = string.Empty;
             _viewModel.IsLoading = true;
             try
