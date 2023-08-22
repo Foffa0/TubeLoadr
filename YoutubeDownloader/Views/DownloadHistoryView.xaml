@@ -9,19 +9,30 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+        <converters:IntToTimestampConverter x:Key="IntToTimestampConverter" />
+        <Style x:Key="ScrollViewerControlTemplate" TargetType="{x:Type ItemsControl}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ItemsControl}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Width="80" Height="30" Command="{Binding LoadDownloadViewCommand}">Back</Button>
-        </StackPanel>
 
+        <TextBlock Grid.Row="0" Text="Downloaded" Style="{StaticResource HeadingTheme}" />
 
         <Grid Grid.Row="1">
+
             <loadingspinnercontrol:LoadingSpinner Thickness="5" Color="Gray" Diameter="100" IsLoading="{Binding IsLoading}"/>
 
             <Grid Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
@@ -29,36 +40,32 @@
                     Foreground="Red"
                     Text="{Binding ErrorMessage}"
                     Visibility="{Binding HasErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <ScrollViewer VerticalScrollBarVisibility="Visible" Style="{StaticResource ScrollViewerTheme}">
+                    <ItemsControl Style="{DynamicResource ScrollViewerControlTemplate}" ItemsSource="{Binding VideosHistory}" BorderThickness="1" Margin="5 0 5 0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource SecondaryColorLight}" Background="{StaticResource WindowThemeDark}" BorderThickness="1">
+                                    <Grid Margin="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <Border Width="150" Height="85" Grid.Column="0" CornerRadius="8" Margin="0,0,25,0">
+                                            <Border.Background>
+                                                <ImageBrush Stretch="Fill" ImageSource="{Binding Thumbnail}"/>
+                                            </Border.Background> 
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="{Binding Title}" Style="{StaticResource LabelTextBlockTheme}" FontWeight="Normal" Margin="0,0,15,0"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Duration, Converter={StaticResource IntToTimestampConverter}}" Style="{StaticResource LabelTextBlockTheme}" Foreground="DarkGray"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
 
-                <ListView ItemsSource="{Binding VideosHistory}" Visibility="{Binding HasErrorMessage, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Thumbnail">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Image Source="{Binding Thumbnail}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-
-                            <GridViewColumn Header="Title">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Title}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-
-                            <GridViewColumn Header="Length">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Duration}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
             </Grid>
         </Grid>
     </Grid>

@@ -11,9 +11,12 @@
                 <ResourceDictionary Source="Theme/MenuButtonTheme.xaml" />
                 <ResourceDictionary Source="Theme/TitleBarButtonTheme.xaml" />
                 <ResourceDictionary Source="Theme/TextboxTheme.xaml" />
+                <ResourceDictionary Source="Theme/HeadingTHeme.xaml" />
                 <ResourceDictionary Source="Theme/LabelTextBlockTheme.xaml" />
                 <ResourceDictionary Source="Theme/RoundedButtonTheme.xaml" />
                 <ResourceDictionary Source="Theme/ComboBoxTheme.xaml" />
+                <ResourceDictionary Source="Theme/ScrollViewerTheme.xaml" />
+                <ResourceDictionary Source="Theme/BusyIndicatorTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <DataTemplate DataType="{x:Type vms:DownloadViewModel}">

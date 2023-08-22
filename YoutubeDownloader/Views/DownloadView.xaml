@@ -20,9 +20,9 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
-            <RowDefinition Height="150" />
-            <RowDefinition />
-            <RowDefinition Height="100"/>
+            <RowDefinition MaxHeight="150" />
+            <RowDefinition Height="350"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <TextBox Grid.Row="0" Width="600" Height="30" VerticalContentAlignment="Center" Text="{Binding VideoUrl, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsLoadingVideoTemp, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource RoundedTextbox}" />
@@ -42,7 +42,7 @@
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="Preview" FontSize="25" FontWeight="Bold" Foreground="{StaticResource SecondaryColor}" Visibility="{Binding VideoTemp, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseNullToVisibilityConverter}}"/>
             </Grid>
         </Border>
-        <Grid Grid.Row="2" Margin="50,0,50,50" MaxWidth="1000">
+        <Grid Grid.Row="2" MaxWidth="1000">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
                 <RowDefinition Height="230"/>
@@ -132,65 +132,51 @@
         </Grid>
 
         <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-            <loadingspinnercontrol:LoadingSpinner Thickness="5" Color="Gray" Diameter="100" IsLoading="{Binding IsLoading}"/>
+            <TextBlock Grid.Row="0" Text="Download queue" Style="{StaticResource HeadingTheme}" Margin="0" FontSize="20" Height="25"/>
 
-            <Grid Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+            <loadingspinnercontrol:LoadingSpinner Grid.Row="1" Thickness="5" Color="Gray" Diameter="100" IsLoading="{Binding IsLoading}"/>
+
+            <Grid Grid.Row="1" Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
 
                 <TextBlock
                     Foreground="Red"
                     Text="{Binding ErrorMessage}"
                     Visibility="{Binding HasErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-                <ItemsControl Width="300" Height="300" Background="AliceBlue" ItemsSource="{Binding Videos}">
-                    <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <WrapPanel>
-                            <TextBlock Text="{Binding Title}" FontWeight="Bold" />
-                            <TextBlock Text=" "/>
-                            <TextBlock Text="{Binding Duration}"/>
-                        </WrapPanel>
-                    </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
 
 
-                <ListView ItemsSource="{Binding Videos}" Visibility="{Binding HasErrorMessage, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Thumbnail">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Image Source="{Binding Thumbnail}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
+                <ScrollViewer VerticalScrollBarVisibility="Visible" Style="{StaticResource ScrollViewerTheme}">
+                    <ItemsControl Style="{DynamicResource ScrollViewerControlTemplate}" ItemsSource="{Binding Videos}" BorderThickness="1" Margin="5 0 5 0" MinHeight="100"  BorderBrush="{StaticResource SecondaryColorLight}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource SecondaryColorLight}" Background="{StaticResource WindowThemeDark}" BorderThickness="1">
+                                    <Grid Margin="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" MaxWidth="100"/>
+                                            <ColumnDefinition Width="*" MaxWidth="450"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
 
-                            <GridViewColumn Header="Title">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Title}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-
-                            <GridViewColumn Header="Length">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Duration}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="Format">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Format}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                                        <Image Grid.Column="0" Source="{Binding Thumbnail}" Height="30" />
+                                        <TextBlock Grid.Column="1" MaxWidth="450" Text="{Binding Title}" Style="{StaticResource LabelTextBlockTheme}" FontWeight="Normal" Margin="0,0,15,0" VerticalAlignment="Center" TextTrimming="WordEllipsis"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Duration, Converter={StaticResource IntToTimestampConverter}}" Style="{StaticResource LabelTextBlockTheme}" Foreground="DarkGray" VerticalAlignment="Center" Margin="10 0 10 0"/>
+                                        <TextBlock Grid.Column="3" Text="{Binding Format}" Style="{StaticResource LabelTextBlockTheme}" Foreground="DarkGray" VerticalAlignment="Center" Margin="20 0 10 0"/>
+                                        <xctk:BusyIndicator Grid.Column="4" BusyContent="" IsBusy="True" Style="{StaticResource BusyIndicatorTheme}" VerticalAlignment="Center">
+                                            <ContentControl Background="Transparent" VerticalAlignment="Center"/>
+                                        </xctk:BusyIndicator>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
             </Grid>
         </Grid>
     </Grid>
