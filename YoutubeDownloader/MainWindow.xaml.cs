@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,6 +55,18 @@ namespace YoutubeDownloader
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+        private void MouseDown_RemoveFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = new TextBox();
+            if (FocusManager.GetFocusedElement(this) != null)
+            {
+                if (FocusManager.GetFocusedElement(this).GetType() == textBox.GetType())
+                {
+                    Keyboard.ClearFocus();
+                    //FocusManager.SetFocusedElement(this, textBox);
+                }
+            }
         }
     }
 }

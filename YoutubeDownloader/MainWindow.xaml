@@ -25,7 +25,7 @@
         </WindowChrome>
     </WindowChrome.WindowChrome>
 
-    <Grid Background="{StaticResource WindowThemeDark}">
+    <Grid Background="{StaticResource WindowThemeDark}" MouseDown="MouseDown_RemoveFocus">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
             <ColumnDefinition />
