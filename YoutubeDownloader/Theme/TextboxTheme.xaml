@@ -1,10 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=netstandard">
     <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="{x:Type TextBox}" x:Key="RoundedTextbox">
+        <Style.Resources>
+            <CornerRadius x:Key="BorderCornerRadius">10</CornerRadius>
+            <s:String x:Key="BackgroundText">Youtube url</s:String>
+        </Style.Resources>
+
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
-                    <Border CornerRadius="10" Background="{StaticResource SecondaryColor}">
+                    <Border CornerRadius="{DynamicResource BorderCornerRadius}" Background="{StaticResource SecondaryColor}" x:Name="TextBoxBorder">
                         <Grid>
                             <Rectangle StrokeThickness="1" />
                             <TextBox Margin="1"
@@ -21,7 +26,7 @@
                                      x:Name="SearchBox"/>
 
                             <TextBlock IsHitTestVisible="False"
-                                       Text="Youtube Url"
+                                       Text="{DynamicResource BackgroundText}"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Left"
                                        Margin="10,0,0,0"
@@ -45,5 +50,14 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
+    <Style x:Key="RoundedTextboxSmallTheme" TargetType="{x:Type TextBox}" 
+    BasedOn="{StaticResource RoundedTextbox}">
+        <Style.Resources>
+            <s:String x:Key="BackgroundText">Filename</s:String>
+            <CornerRadius x:Key="BorderCornerRadius">5</CornerRadius>
+        </Style.Resources>
+    </Style>
+
+
 </ResourceDictionary>

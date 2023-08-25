@@ -70,7 +70,8 @@
                   Value="True" />
                     <Setter Property="Height"
                   Value="15" />
-
+                    <Setter Property="Background" Value="White" />
+                    <Setter Property="Foreground" Value="{StaticResource PrimaryColor}" />
                 </Style>
             </Setter.Value>
         </Setter>

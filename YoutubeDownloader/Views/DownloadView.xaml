@@ -34,7 +34,7 @@
                 <StackPanel HorizontalAlignment="Stretch"  Orientation="Horizontal" DataContext="{Binding VideoTemp, UpdateSourceTrigger=PropertyChanged}" >
                     <Image Source="{Binding Thumbnail, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="0,0,15, 0" Visibility="{Binding Title, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullToVisibilityConverter}}"/>
                     <StackPanel Orientation="Vertical" VerticalAlignment="Center" Visibility="{Binding Title, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullToVisibilityConverter}}">
-                        <TextBlock Text="{Binding Title}" Style="{StaticResource LabelTextBlockTheme}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Title}" Style="{StaticResource LabelTextBlockTheme}" FontWeight="Bold" TextTrimming="WordEllipsis" MaxWidth="330"/>
                         <TextBlock Text="{Binding Channel}" Style="{StaticResource LabelTextBlockTheme}"/>
                     </StackPanel>
                 </StackPanel>
@@ -59,11 +59,29 @@
 
                 <TextBlock Text="Output Directory" Style="{StaticResource LabelTextBlockTheme}"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,20">
-                    <TextBlock Text="{Binding OutputDir}" Style="{StaticResource LabelTextBlockTheme}" Foreground="Gray" FontWeight="Medium" VerticalAlignment="Center" Margin="50,0,50,0"/>
+                    <TextBlock Text="{Binding OutputDir}" Foreground="Gray" FontWeight="Medium" VerticalAlignment="Center" Margin="50,0,50,0"/>
                     <Button Width="100"  Height="40" Command="{Binding CommonOpenFileDialogCommand}" VerticalAlignment="Center" Style="{StaticResource RoundedButtonTheme}">Change</Button>
                 </StackPanel>
 
                 <TextBlock Text="Filename" Style="{StaticResource LabelTextBlockTheme}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Height="30" HorizontalAlignment="Stretch" Text="{Binding Filename}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource RoundedTextboxSmallTheme}">
+                                <Style.Resources>
+                                    <CornerRadius x:Key="BorderCornerRadius">5,0,0,5</CornerRadius>
+                                </Style.Resources>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                    <Border BorderThickness="1 0 0 0" Grid.Column="1" CornerRadius="0,5,5,0">
+                        <TextBlock Text="{Binding Format, UpdateSourceTrigger=PropertyChanged, StringFormat={}.{0}}"  Background="{StaticResource SecondaryColor}" VerticalAlignment="Center" Padding="5,8,5,8" Foreground="White" />
+                    </Border>
+                </Grid>
             </StackPanel>
 
             <Border Grid.Column="1" Grid.Row="1" Background="{StaticResource SecondaryColor}"/>
