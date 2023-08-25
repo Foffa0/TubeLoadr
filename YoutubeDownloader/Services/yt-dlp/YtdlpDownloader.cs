@@ -210,7 +210,7 @@ namespace YoutubeDownloader.Services.yt_dlp
                 Debug.Write(thumbnailUrl);
 
 
-                Video video = new Video(metadata.GetValueOrDefault("title").ToString(), metadata.GetValueOrDefault("webpage_url").ToString(), int.Parse(metadata.GetValueOrDefault("duration").ToString()), metadata.GetValueOrDefault("channel").ToString(), thumbnailUrl, downloadOptions.OutputDir, downloadOptions.Format, downloadOptions.Starttime, downloadOptions.Endtime, downloadOptions.Resolution);
+                Video video = new Video(metadata.GetValueOrDefault("title").ToString(), metadata.GetValueOrDefault("webpage_url").ToString(), int.Parse(metadata.GetValueOrDefault("duration").ToString()), metadata.GetValueOrDefault("channel").ToString(), thumbnailUrl, downloadOptions.Filename, downloadOptions.OutputDir, downloadOptions.Format, downloadOptions.Starttime, downloadOptions.Endtime, downloadOptions.Resolution);
                 return video;
             });
             return video;
@@ -260,7 +260,7 @@ namespace YoutubeDownloader.Services.yt_dlp
                     posprocessorArgs = $"""--postprocessor-args "-ss {start.ToString("hh':'mm':'ss")} -to {end}" """;
                 }
 
-                proc.StandardInput.WriteLine($"yt-dlp.exe --ffmpeg-location D:/Downloads/yt-dlp --prefer-ffmpeg --no-mtime {formatOptions} {resolutionOptions} {posprocessorArgs} -o %(title)s.%(ext)s -P {vid.FilePath} {vid.Url}");
+                proc.StandardInput.WriteLine($"yt-dlp.exe --ffmpeg-location D:/Downloads/yt-dlp --prefer-ffmpeg --no-mtime {formatOptions} {resolutionOptions} {posprocessorArgs} -o {video.Filename}.%(ext)s -P {vid.FilePath} {vid.Url}");
 
                 proc.StandardInput.Close();
                 ArgumentNullException.ThrowIfNull(proc);

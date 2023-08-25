@@ -73,6 +73,7 @@ namespace YoutubeDownloader.Services.VideoCreators
                 Duration = video.Duration,
                 Channel = video.Channel,
                 Thumbnail = video.Thumbnail,
+                Filename = video.Filename,
                 FilePath = video.FilePath,
                 Format = video.Format,
                 Resolution = video.Resolution,

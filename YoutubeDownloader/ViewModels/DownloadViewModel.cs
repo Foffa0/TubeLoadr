@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Windows.Input;
 using YoutubeDownloader.Commands;
 using YoutubeDownloader.Models;
@@ -159,6 +160,17 @@ namespace YoutubeDownloader.ViewModels
             }
         }
 
+        private string _filename;
+        public string Filename
+        {
+            get { return _filename; }
+            set
+            {
+                _filename = value;
+                OnPropertyChanged(nameof(Filename));
+            }
+        }
+
         // Video that belongs to the currently entered url (before pressing download btn)
         private VideoInfo? _videoTemp;
         public VideoInfo? VideoTemp
@@ -278,6 +290,8 @@ namespace YoutubeDownloader.ViewModels
                     OnPropertyChanged(nameof(AvailableResolutionsVideo));
                     _availableResolutionsAudio = _videoTemp.AvailableResolutionsAudio;
                     OnPropertyChanged(nameof(AvailableResolutionsAudio));
+                    _filename = _videoTemp.Title; 
+                    OnPropertyChanged(nameof(Filename));
 
                     _isLoadingVideoTemp = false;
                     OnPropertyChanged(nameof(IsLoadingVideoTemp));

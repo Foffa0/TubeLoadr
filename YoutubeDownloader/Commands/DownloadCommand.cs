@@ -25,7 +25,7 @@ namespace YoutubeDownloader.Commands
 
         public override bool CanExecute(object? parameter)
         {
-            return !string.IsNullOrEmpty(_downloadViewModel.VideoUrl) && !_downloadViewModel.HasErrors && !string.IsNullOrEmpty(_downloadViewModel.Format) && _downloadViewModel.ResolutionAudio != null || !string.IsNullOrEmpty(_downloadViewModel.ResolutionVideo) && !string.IsNullOrEmpty(_downloadViewModel.OutputDir) && base.CanExecute(parameter);
+            return !string.IsNullOrEmpty(_downloadViewModel.VideoUrl) && !_downloadViewModel.HasErrors && !string.IsNullOrEmpty(_downloadViewModel.Format) && !string.IsNullOrEmpty(_downloadViewModel.Filename) && _downloadViewModel.ResolutionAudio != null || !string.IsNullOrEmpty(_downloadViewModel.ResolutionVideo) && !string.IsNullOrEmpty(_downloadViewModel.OutputDir) && base.CanExecute(parameter);
         }
 
         public override async Task ExecuteAsync(object parameter)
@@ -35,10 +35,10 @@ namespace YoutubeDownloader.Commands
             string resolution = _downloadViewModel.IsVideoFormat ? _downloadViewModel.ResolutionVideo : _downloadViewModel.ResolutionAudio.ToString();
 
 
-            DownloadOptions downloadOptions = new DownloadOptions(_downloadViewModel.OutputDir, _downloadViewModel.Format, _downloadViewModel.TimestampStart, _downloadViewModel.TimestampEnd, resolution);
+            DownloadOptions downloadOptions = new DownloadOptions(_downloadViewModel.Filename, _downloadViewModel.OutputDir, _downloadViewModel.Format, _downloadViewModel.TimestampStart, _downloadViewModel.TimestampEnd, resolution);
             
             await _downloader.GetVideoInfoAndAddToQueue(_downloadViewModel.VideoUrl, downloadOptions);
-            _downloadViewModel.VideoUrl = "";
+            _downloadViewModel.VideoUrl = string.Empty;
             /*}
             catch (Exception) 
             {
@@ -50,7 +50,7 @@ namespace YoutubeDownloader.Commands
 
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(DownloadViewModel.VideoUrl) || e.PropertyName == nameof(DownloadViewModel.Format) || e.PropertyName == nameof(DownloadViewModel.ResolutionVideo) || e.PropertyName == nameof(DownloadViewModel.ResolutionAudio) || e.PropertyName == nameof(DownloadViewModel.OutputDir))
+            if (e.PropertyName == nameof(DownloadViewModel.VideoUrl) || e.PropertyName == nameof(DownloadViewModel.Format) || e.PropertyName == nameof(DownloadViewModel.ResolutionVideo) || e.PropertyName == nameof(DownloadViewModel.ResolutionAudio) || e.PropertyName == nameof(DownloadViewModel.OutputDir) || e.PropertyName == nameof(DownloadViewModel.Filename))
             {
                 OnCanExecuteChanged();
             }
