@@ -260,7 +260,7 @@ namespace YoutubeDownloader.Services.yt_dlp
                     posprocessorArgs = $"""--postprocessor-args "-ss {start.ToString("hh':'mm':'ss")} -to {end}" """;
                 }
 
-                proc.StandardInput.WriteLine($"yt-dlp.exe --ffmpeg-location D:/Downloads/yt-dlp --prefer-ffmpeg --no-mtime {formatOptions} {resolutionOptions} {posprocessorArgs} -o {video.Filename}.%(ext)s -P {vid.FilePath} {vid.Url}");
+                proc.StandardInput.WriteLine($"""yt-dlp.exe --ffmpeg-location D:/Downloads/yt-dlp --prefer-ffmpeg --no-mtime {formatOptions} {resolutionOptions} {posprocessorArgs} -o "{video.Filename}.%(ext)s" -P {vid.FilePath} {vid.Url}""");
 
                 proc.StandardInput.Close();
                 ArgumentNullException.ThrowIfNull(proc);
