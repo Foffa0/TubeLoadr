@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YoutubeDownloader.Services.yt_dlp;
 
 namespace YoutubeDownloader.Models
 {   
@@ -25,6 +26,8 @@ namespace YoutubeDownloader.Models
         public int EndTime { get; }
         public string Resolution { get; }
 
+        public string DownloadState { get; set; }
+
         public Video(string title, string url, int duration, string channel, string thumbnail, string filename, string filePath, string format, int startTime, int endTime, string resolution)
         {
             Id = Guid.NewGuid();
@@ -39,6 +42,7 @@ namespace YoutubeDownloader.Models
             StartTime = startTime;
             EndTime = endTime;
             Resolution = resolution;
+            DownloadState = YtdlpDownloader.QUEUED;
         }
 
         public Video(Guid id, string title, string url, int duration, string channel, string thumbnail, string filename, string filePath, string format, int startTime, int endTime, string resolution)

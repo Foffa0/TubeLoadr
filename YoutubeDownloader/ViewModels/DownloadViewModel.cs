@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.RightsManagement;
 using System.Windows.Input;
@@ -167,6 +168,12 @@ namespace YoutubeDownloader.ViewModels
             set
             {
                 _filename = value;
+                ClearErrors(nameof(Filename));
+
+                if (value.Contains("\""))
+                {
+                    AddError("Invalid character: \"", nameof(Filename));
+                }
                 OnPropertyChanged(nameof(Filename));
             }
         }
@@ -290,7 +297,7 @@ namespace YoutubeDownloader.ViewModels
                     OnPropertyChanged(nameof(AvailableResolutionsVideo));
                     _availableResolutionsAudio = _videoTemp.AvailableResolutionsAudio;
                     OnPropertyChanged(nameof(AvailableResolutionsAudio));
-                    _filename = _videoTemp.Title; 
+                    _filename = _videoTemp.Title.Replace("\"", ""); 
                     OnPropertyChanged(nameof(Filename));
 
                     _isLoadingVideoTemp = false;

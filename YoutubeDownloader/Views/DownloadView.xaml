@@ -16,6 +16,8 @@
         <converters:NullToIsEnabledConverter x:Key="NullToIsEnabledConverter" />
         <converters:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter" />
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <converters:DownloadStateToVisibilityConverter x:Key="DownloadStateToVisibilityConverter" />
+        <converters:InverseDownloadStateToVisibilityConverter x:Key="InverseDownloadStateToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -69,7 +71,7 @@
                         <ColumnDefinition />
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Height="30" HorizontalAlignment="Stretch" Text="{Binding Filename}">
+                    <TextBox Grid.Column="0" Height="30" HorizontalAlignment="Stretch" Text="{Binding Filename, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource RoundedTextboxSmallTheme}">
                                 <Style.Resources>
@@ -186,9 +188,10 @@
                                         <TextBlock Grid.Column="1" MaxWidth="450" Text="{Binding Title}" Style="{StaticResource LabelTextBlockTheme}" FontWeight="Normal" Margin="0,0,15,0" VerticalAlignment="Center" TextTrimming="WordEllipsis"/>
                                         <TextBlock Grid.Column="2" Text="{Binding Duration, Converter={StaticResource IntToTimestampConverter}}" Style="{StaticResource LabelTextBlockTheme}" Foreground="DarkGray" VerticalAlignment="Center" Margin="10 0 10 0"/>
                                         <TextBlock Grid.Column="3" Text="{Binding Format}" Style="{StaticResource LabelTextBlockTheme}" Foreground="DarkGray" VerticalAlignment="Center" Margin="20 0 10 0"/>
-                                        <xctk:BusyIndicator Grid.Column="4" BusyContent="" IsBusy="True" Style="{StaticResource BusyIndicatorTheme}" VerticalAlignment="Center">
+                                        <xctk:BusyIndicator Grid.Column="4" BusyContent="" IsBusy="True" Visibility="{Binding DownloadState, Converter={StaticResource DownloadStateToVisibilityConverter}}" Style="{StaticResource BusyIndicatorTheme}" VerticalAlignment="Center">
                                             <ContentControl Background="Transparent" VerticalAlignment="Center"/>
                                         </xctk:BusyIndicator>
+                                        <TextBlock Grid.Column="4" Text="{Binding DownloadState}" Style="{StaticResource LabelTextBlockTheme}" Visibility="{Binding DownloadState, Converter={StaticResource InverseDownloadStateToVisibilityConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20 0 10 0"/>
                                     </Grid>
                                 </Border>
                             </DataTemplate>

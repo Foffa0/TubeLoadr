@@ -11,6 +11,11 @@ namespace YoutubeDownloader.Services.yt_dlp
 {
     public class YtdlpDownloader
     {
+        public static string QUEUED = "Queued";
+        public static string DOWNLOADING = "Downloading";
+        public static string DOWNLOADED = "Finished";
+        public static string ERROR = "Error";
+
 
         public async Task<VideoInfo> GetVideoInfo(string url)
         {
@@ -227,8 +232,8 @@ namespace YoutubeDownloader.Services.yt_dlp
             info.RedirectStandardError = true;
             info.WorkingDirectory = "D:/Downloads/yt-dlp";
 
-            var vid = video;
-
+            video.DownloadState = DOWNLOADING;
+            
             await Task.Run(async () =>
             {
                 var proc = Process.Start(info);
@@ -239,15 +244,15 @@ namespace YoutubeDownloader.Services.yt_dlp
                 string resolutionOptions = "";
                 string posprocessorArgs = "";
 
-                if (vid.Format == "mp4" || vid.Format == "mkv" || vid.Format == "ogg" || vid.Format =="webm")
+                if (video.Format == "mp4" || video.Format == "mkv" || video.Format == "ogg" || video.Format =="webm")
                 {
-                    formatOptions = $"--merge-output-format {vid.Format}";//$"--recode-video {vid.Format}";
-                    string resolution = vid.Resolution.Replace("p", "");
+                    formatOptions = $"--merge-output-format {video.Format}";//$"--recode-video {vid.Format}";
+                    string resolution = video.Resolution.Replace("p", "");
                     resolutionOptions = $""" "-f bestvideo[height<={resolution}]+bestaudio/best" """;
                 }
                 else
                 {
-                    formatOptions = $"-x --audio-format {vid.Format}";
+                    formatOptions = $"-x --audio-format {video.Format}";
                     resolutionOptions = $"--audio-quality 128k";
                 }
 
@@ -260,13 +265,14 @@ namespace YoutubeDownloader.Services.yt_dlp
                     posprocessorArgs = $"""--postprocessor-args "-ss {start.ToString("hh':'mm':'ss")} -to {end}" """;
                 }
 
-                proc.StandardInput.WriteLine($"""yt-dlp.exe --ffmpeg-location D:/Downloads/yt-dlp --prefer-ffmpeg --no-mtime {formatOptions} {resolutionOptions} {posprocessorArgs} -o "{video.Filename}.%(ext)s" -P {vid.FilePath} {vid.Url}""");
+                proc.StandardInput.WriteLine($""""yt-dlp.exe --ffmpeg-location D:/Downloads/yt-dlp --prefer-ffmpeg --no-mtime {formatOptions} {resolutionOptions} {posprocessorArgs} -o "{video.Filename}.%(ext)s" -P {video.FilePath} {video.Url}"""");
 
                 proc.StandardInput.Close();
                 ArgumentNullException.ThrowIfNull(proc);
                 //string output = proc.StandardOutput.ReadToEnd();
                 //Debug.WriteLine(output);
                 await proc.WaitForExitAsync();
+
             });
         }
 
