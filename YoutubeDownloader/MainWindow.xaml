@@ -8,8 +8,7 @@
         xmlns:vms="clr-namespace:YoutubeDownloader.ViewModels"
         mc:Ignorable="d"
         Height="700" Width="1300"
-        WindowStyle="None"
-        AllowsTransparency="True"
+
         FontFamily="/Fonts/#Poppins"
         MinHeight="300"
         MinWidth="500">
@@ -18,13 +17,31 @@
 
     <WindowChrome.WindowChrome>
         <WindowChrome     
-        CaptionHeight="1"  
+        CaptionHeight="20"  
         CornerRadius ="0"
-        ResizeBorderThickness="4"         
+        ResizeBorderThickness="5"
         GlassFrameThickness="0">
         </WindowChrome>
     </WindowChrome.WindowChrome>
 
+    <Border BorderThickness="0">
+        <Border.Style>
+            <Style TargetType="{x:Type Border}">
+                <Style.Triggers>
+                    <!-- Add to avoid border disappearing when window is maximised -->
+                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                 Value="Maximized">
+                        <Setter Property="Margin" Value="8"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                 Value="Normal">
+                        <Setter Property="Margin" Value="0"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+    
+    
     <Grid Background="{StaticResource WindowThemeDark}" MouseDown="MouseDown_RemoveFocus">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
@@ -40,14 +57,14 @@
 
         </Grid.Resources>
 
-        <Border Grid.ColumnSpan="2" MouseDown="Border_MouseDown">
+        <Border Grid.ColumnSpan="2">
             <Grid HorizontalAlignment="Stretch">
                 <Label Content="Y-Downloader" Foreground="Gray" FontWeight="SemiBold"/>
 
                 <StackPanel HorizontalAlignment="Right" VerticalAlignment="Stretch" Orientation="Horizontal">
-                    <Button x:Name="minimizeBtn" Width="40" VerticalAlignment="Stretch" Content="🗕" Padding="0,0,0,5" Style="{StaticResource TitleBarButtonTheme}" Click="Button_Minimize_Click"/>
-                    <Button Width="40" Content="☐" Style="{StaticResource TitleBarButtonTheme}" Click="WindowStateButton_Click" />
-                    <Button Width="40" Content="✕" Style="{StaticResource TitleBarButtonTheme}" Click="CloseButton_Click" />
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" x:Name="minimizeBtn" Width="50" VerticalAlignment="Stretch" Content="🗕" Padding="0,0,0,5" Style="{StaticResource TitleBarButtonTheme}" Click="Button_Minimize_Click"/>
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Width="50" Content="☐" Style="{StaticResource TitleBarButtonTheme}" Click="WindowStateButton_Click" />
+                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Width="50" Content="✕" Style="{StaticResource TitleBarButtonTheme}" Click="CloseButton_Click" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -65,4 +82,5 @@
             <ContentControl  Content="{Binding CurrentViewModel}" Margin="10" />
         </Border>
     </Grid>
+    </Border>
 </Window>

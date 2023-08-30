@@ -27,13 +27,14 @@ namespace YoutubeDownloader
             InitializeComponent();
         }
 
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        /*private void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+                if (Application.Current.MainWindow.WindowState == WindowState.Maximized) Application.Current.MainWindow.WindowState = WindowState.Normal;
                 DragMove();
             }
-        }
+        }*/
 
         private void Button_Minimize_Click(object sender, RoutedEventArgs e)
         {
