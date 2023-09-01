@@ -94,11 +94,11 @@ namespace YoutubeDownloader.Stores
 
 
 
-        /* public async Task DeleteDownloadedVideo(DownloadedVideo video)
-         {
+        public async Task DeleteDownloadedVideo(DownloadedVideo video)
+        {
              await _downloader.DeleteDownloadedVideo(video);
-             _videos.Remove(video);
-         }*/
+            OnDownloadedVideoRemoved(video);
+        }
 
         /* public async Task DeleteQueuedVideo(Video video)
          {

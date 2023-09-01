@@ -51,6 +51,8 @@ namespace YoutubeDownloader.ViewModels
 
         public ICommand LoadHistoryVideosCommand { get; }
         public ICommand LoadDownloadViewCommand { get; }
+        public ICommand RemoveFromHistoryCommand { get; }
+        public ICommand OpenFolderCommand { get; }
 
 
         public DownloadHistoryViewModel(DownloaderStore downloaderStore, NavigationService downloadViewNavigationService)
@@ -60,6 +62,10 @@ namespace YoutubeDownloader.ViewModels
             LoadHistoryVideosCommand = new LoadHistoryVideosCommand(this, _downloaderStore);
 
             LoadDownloadViewCommand = new NavigateCommand(downloadViewNavigationService);
+
+            RemoveFromHistoryCommand = new RemoveFromHistoryCommand(this, _downloaderStore);
+
+            OpenFolderCommand = new OpenFolderCommand();
 
             _videos = new ObservableCollection<DownloadedVideoViewModel>();
 
