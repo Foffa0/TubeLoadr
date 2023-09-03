@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using YoutubeDownloader.Exceptions;
 using YoutubeDownloader.Models;
 
 namespace YoutubeDownloader.Services.yt_dlp
@@ -16,7 +17,11 @@ namespace YoutubeDownloader.Services.yt_dlp
         public static string DOWNLOADED = "Finished";
         public static string ERROR = "Error";
 
-
+        /// <summary>
+        /// Get video metadata from url.
+        /// </summary>
+        /// <param name="url">The youtube video url.</param>
+        /// <exception cref="VideoNotFoundException">Thrown if no video exists at the url.</exception>
         public async Task<VideoInfo> GetVideoInfo(string url)
         {
             ProcessStartInfo info = new ProcessStartInfo("cmd");
@@ -54,7 +59,12 @@ namespace YoutubeDownloader.Services.yt_dlp
                 string SearchStringStart = "Writing video metadata as JSON to:";
                 string SearchStringEnd = ".info.json";
 
-                if (output.Contains(SearchStringStart))
+                if (!output.Contains(SearchStringStart))
+                {
+                    throw new VideoNotFoundException("Youtube video not found");
+                }
+
+                 if (output.Contains(SearchStringStart))
                 {
                     int Start = output.IndexOf(SearchStringStart, 0) + SearchStringStart.Length;
                     int End = output.IndexOf(SearchStringEnd) + SearchStringEnd.Length;

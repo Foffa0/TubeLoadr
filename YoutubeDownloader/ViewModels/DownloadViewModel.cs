@@ -4,11 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.RightsManagement;
 using System.Windows.Input;
 using YoutubeDownloader.Commands;
+using YoutubeDownloader.Exceptions;
 using YoutubeDownloader.Models;
 using YoutubeDownloader.Stores;
 
@@ -285,7 +284,21 @@ namespace YoutubeDownloader.ViewModels
                     _isLoadingVideoTemp = true;
                     OnPropertyChanged(nameof(IsLoadingVideoTemp));
 
-                    VideoTemp = await _downloaderStore.Downloader.GetVideoInfo(_videoUrl);
+                    try
+                    {
+                        VideoTemp = await _downloaderStore.Downloader.GetVideoInfo(_videoUrl);
+                    }
+                    catch (VideoNotFoundException ex)
+                    {
+                        ClearErrors(nameof(VideoUrl));
+                        AddError(ex.Message, nameof(VideoUrl));
+                        OnPropertyChanged(nameof(VideoUrl));
+
+                        _isLoadingVideoTemp = false;
+                        OnPropertyChanged(nameof(IsLoadingVideoTemp));
+                        break;
+                    }
+
                     OnPropertyChanged(nameof(VideoTemp));
                     _timestampStart = 0;
                     OnPropertyChanged(nameof(TimestampStart));
@@ -297,8 +310,9 @@ namespace YoutubeDownloader.ViewModels
                     OnPropertyChanged(nameof(AvailableResolutionsVideo));
                     _availableResolutionsAudio = _videoTemp.AvailableResolutionsAudio;
                     OnPropertyChanged(nameof(AvailableResolutionsAudio));
-                    _filename = _videoTemp.Title.Replace("\"", ""); 
+                    _filename = _videoTemp.Title.Replace("\"", "");
                     OnPropertyChanged(nameof(Filename));
+                    ClearErrors(nameof(Filename));
 
                     _isLoadingVideoTemp = false;
                     OnPropertyChanged(nameof(IsLoadingVideoTemp));
