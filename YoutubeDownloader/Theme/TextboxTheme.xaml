@@ -6,33 +6,46 @@
             <s:String x:Key="BackgroundText">Youtube url</s:String>
         </Style.Resources>
 
+        <Setter Property="Validation.ErrorTemplate">
+            <Setter.Value>
+                <ControlTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <Border BorderBrush="Red" BorderThickness="1" CornerRadius="10">
+                            <AdornedElementPlaceholder x:Name="controlWithError" />
+                        </Border>
+                        <TextBlock Foreground="Red" Text="{Binding ErrorContent}" FontSize="12" Margin="5" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
-                    <Border CornerRadius="{DynamicResource BorderCornerRadius}" Background="{StaticResource SecondaryColor}" x:Name="TextBoxBorder">
+                    <Border  CornerRadius="{DynamicResource BorderCornerRadius}" Background="{StaticResource SecondaryColor}" x:Name="TextBoxBorder">
                         <Grid>
                             <Rectangle StrokeThickness="1" />
                             <TextBox Margin="1"
-                                     Text="{Binding Path=Text,
-                                        RelativeSource={RelativeSource TemplatedParent}, 
-                                        Mode=TwoWay,
-                                        UpdateSourceTrigger=PropertyChanged}"
-                                     BorderThickness="0"
-                                     Background="Transparent"
-                                     VerticalAlignment="Center"
-                                     Padding="5"
-                                     Foreground="#CFCFCF"
-                                     CaretBrush="{StaticResource PrimaryColor}"
-                                     x:Name="SearchBox"/>
+                                             Text="{Binding Path=Text,
+                                                RelativeSource={RelativeSource TemplatedParent}, 
+                                                Mode=TwoWay,
+                                                UpdateSourceTrigger=PropertyChanged}"
+                                             BorderThickness="0"
+                                             Background="Transparent"
+                                             VerticalAlignment="Center"
+                                             Padding="5"
+                                             Foreground="#CFCFCF"
+                                             CaretBrush="{StaticResource PrimaryColor}"
+                                             x:Name="SearchBox"/>
 
                             <TextBlock IsHitTestVisible="False"
-                                       Text="{DynamicResource BackgroundText}"
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Left"
-                                       Margin="10,0,0,0"
-                                       FontSize="11"
-                                       Foreground="DarkGray"
-                                       Grid.Column="1">
+                                               Text="{DynamicResource BackgroundText}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left"
+                                               Margin="10,1,0,0"
+                                               FontSize="11"
+                                               Foreground="DarkGray"
+                                               Grid.Column="1">
                                 <TextBlock.Style>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Style.Triggers>
@@ -57,6 +70,19 @@
             <s:String x:Key="BackgroundText">Filename</s:String>
             <CornerRadius x:Key="BorderCornerRadius">5</CornerRadius>
         </Style.Resources>
+
+        <Setter Property="Validation.ErrorTemplate">
+            <Setter.Value>
+                <ControlTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <Border BorderBrush="Red" BorderThickness="1" CornerRadius="5">
+                            <AdornedElementPlaceholder x:Name="controlWithError" />
+                        </Border>
+                        <TextBlock Foreground="Red" Text="{Binding ErrorContent}" FontSize="12" Margin="5" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 
