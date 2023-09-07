@@ -39,6 +39,7 @@ namespace YoutubeDownloader.Commands
             
             await _downloader.GetVideoInfoAndAddToQueue(_downloadViewModel.VideoUrl, downloadOptions);
             _downloadViewModel.VideoUrl = string.Empty;
+            _downloadViewModel.VideoTemp = null;
             /*}
             catch (Exception) 
             {
