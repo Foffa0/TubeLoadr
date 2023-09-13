@@ -83,7 +83,7 @@ namespace YoutubeDownloader.ViewModels
         private void OnVideoCreated(DownloadedVideo video)
         {
             DownloadedVideoViewModel videoViewModel = new DownloadedVideoViewModel(video);
-            _videos.Add(videoViewModel);
+            _videos.Insert(0, videoViewModel);
         }
 
         private void OnVideoDeleted(DownloadedVideo video)
@@ -107,7 +107,7 @@ namespace YoutubeDownloader.ViewModels
             foreach (DownloadedVideo video in videos)
             {
                 DownloadedVideoViewModel v = new DownloadedVideoViewModel(video);
-                _videos.Add(v);
+                _videos.Insert(0, v);
             }
         }
 
