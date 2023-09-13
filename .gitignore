@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/YoutubeDownloader/Downloadtools/ffmpeg.exe
+/YoutubeDownloader/Downloadtools/ffplay.exe
+/YoutubeDownloader/Downloadtools/ffprobe.exe
+/YoutubeDownloader/Downloadtools/yt-dlp.exe
