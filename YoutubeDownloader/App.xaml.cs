@@ -36,8 +36,9 @@ namespace YoutubeDownloader
             IVideoCreator videoCreator = new DatabaseVideoCreator(_downloaderDbContextFactory);
             IVideoProvider videoProvider = new DatabaseVideoProvider(_downloaderDbContextFactory);
 
-            _downloader = new Downloader(videoProvider, videoCreator);
-            _downloaderStore = new DownloaderStore(_downloader);
+            
+            _downloaderStore = new DownloaderStore(videoProvider, videoCreator);
+            _downloader = new Downloader(_downloaderStore);
             _navigationStore = new NavigationStore();
         }
 
@@ -61,9 +62,16 @@ namespace YoutubeDownloader
             base.OnStartup(e);
         }
 
+        protected override void OnExit(ExitEventArgs e)
+        {
+            _downloader.CancelDownload();
+
+            base.OnExit(e);
+        }
+
         private DownloadViewModel CreateDownloadViewModel()
         {
-            return DownloadViewModel.LoadViewModel(_downloaderStore);
+            return DownloadViewModel.LoadViewModel(_downloaderStore, _downloader);
         }
 
         private DownloadHistoryViewModel CreateDownloadHistoryViewModel()
