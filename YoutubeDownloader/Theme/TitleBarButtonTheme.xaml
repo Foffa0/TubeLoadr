@@ -5,7 +5,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Button Content="{TemplateBinding Property=Content}" VerticalAlignment="Center" FontFamily="/Fonts/#Poppins" FontWeight="Bold" Background="Transparent" BorderThickness="0" Foreground="Gray"/>
+                        <Button Content="{TemplateBinding Property=Content}" VerticalAlignment="Stretch" FontFamily="/Fonts/#Poppins" FontWeight="Bold" Background="{TemplateBinding Background}" BorderThickness="0" Foreground="Gray"/>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

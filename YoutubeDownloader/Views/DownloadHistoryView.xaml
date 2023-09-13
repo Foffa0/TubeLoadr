@@ -58,9 +58,19 @@
                                                 <ImageBrush Stretch="Fill" ImageSource="{Binding Thumbnail}"/>
                                             </Border.Background> 
                                         </Border>
-                                        <TextBlock Grid.Column="1" Text="{Binding Title}" Style="{StaticResource LabelTextBlockTheme}" FontWeight="Normal" Margin="0,0,15,0"/>
-                                        <TextBlock Grid.Column="2" Text="{Binding Duration, Converter={StaticResource IntToTimestampConverter}}" Style="{StaticResource LabelTextBlockTheme}" Foreground="DarkGray"/>
-                                        <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <StackPanel Grid.Column="1" Orientation="Vertical" Margin="0,5,0,0">
+                                            <TextBlock Text="{Binding Title}" Style="{StaticResource LabelTextBlockTheme}" FontSize="16" FontWeight="Normal" Margin="0,0,15,0" TextTrimming="WordEllipsis" MaxWidth="630"/>
+                                            <TextBlock Style="{StaticResource LabelTextBlockTheme}" Foreground="DarkGray" Margin="0 5" TextTrimming="WordEllipsis" MaxWidth="630">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0}.{1}">
+                                                        <Binding Path="Filename" />
+                                                        <Binding Path="Format" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" Text="{Binding Duration, Converter={StaticResource IntToTimestampConverter}}" Style="{StaticResource LabelTextBlockTheme}" Foreground="DarkGray" Margin="5 5 5 0" />
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5 0">
                                             <Button Margin="5" Content="📁" Width="40" Height="40" FontSize="15" Style="{StaticResource RoundedButtonTheme}" Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding FilePath}"/>
                                             <Button Margin="5" Content="❌" Width="40" Height="40" FontSize="15" Style="{StaticResource RoundedButtonTheme}" Command="{Binding DataContext.RemoveFromHistoryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}"/>
                                         </StackPanel>
