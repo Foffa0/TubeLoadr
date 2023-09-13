@@ -4,11 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
 using YoutubeDownloader.Commands;
 using YoutubeDownloader.Exceptions;
 using YoutubeDownloader.Models;
+using YoutubeDownloader.Services.yt_dlp;
 using YoutubeDownloader.Stores;
 
 namespace YoutubeDownloader.ViewModels
@@ -16,8 +19,9 @@ namespace YoutubeDownloader.ViewModels
     class DownloadViewModel : ViewModelBase, INotifyDataErrorInfo
     {
         private readonly DownloaderStore _downloaderStore;
+        private readonly Downloader _downloader;
 
-    // Download options
+        // Download options
         private string _videoUrl;
         public string VideoUrl
         {
@@ -33,7 +37,7 @@ namespace YoutubeDownloader.ViewModels
 
                 if (!LinkUtils.CheckIsYouTubeLink(value) && !string.IsNullOrEmpty(value))
                 {
-                    AddError("Invalid link! Only YouTube links are allowed.", nameof(VideoUrl));
+                    AddError("Invalid link! Only YouTube links are supported.", nameof(VideoUrl));
                 }
                 if (string.IsNullOrEmpty(value))
                 {
@@ -132,7 +136,14 @@ namespace YoutubeDownloader.ViewModels
 
         private List<string> _availableResolutionsVideo;
         public List<string> AvailableResolutionsVideo
-        { get { return _availableResolutionsVideo; } }
+        { 
+            get { return _availableResolutionsVideo; }
+            set
+            {
+                _availableResolutionsVideo = value;
+                OnPropertyChanged(nameof(AvailableResolutionsVideo));
+            }
+        }
 
         private string _reslutionVideo;
         public string ResolutionVideo
@@ -147,7 +158,13 @@ namespace YoutubeDownloader.ViewModels
 
         private List<int> _availableResolutionsAudio;
         public List<int> AvailableResolutionsAudio
-        { get { return _availableResolutionsAudio; } }
+        { 
+            get { return _availableResolutionsAudio; } 
+            set { 
+                _availableResolutionsAudio = value;
+                OnPropertyChanged(nameof(AvailableResolutionsAudio));
+            }
+        }
 
         private int? _reslutionAudio;
         public int? ResolutionAudio
@@ -169,9 +186,9 @@ namespace YoutubeDownloader.ViewModels
                 _filename = value;
                 ClearErrors(nameof(Filename));
 
-                if (value.Contains("\""))
+                if (value.Contains("\"") || value.Contains("\\") || value.Contains("/"))
                 {
-                    AddError("Invalid character: \"", nameof(Filename));
+                    AddError("Invalid character! (\" , \\ , /)", nameof(Filename));
                 }
                 OnPropertyChanged(nameof(Filename));
             }
@@ -199,6 +216,7 @@ namespace YoutubeDownloader.ViewModels
             set { _isLoadingVideoTemp = value; OnPropertyChanged(nameof(IsLoadingVideoTemp));}
         }
 
+        // Queued videos
 
         private readonly ObservableCollection<VideoViewModel> _videos;
 
@@ -220,9 +238,11 @@ namespace YoutubeDownloader.ViewModels
 
         }
 
+        // Validation Errors
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
         private readonly Dictionary<string, List<string>> _propertyNameToErrorsDictionary;
+
 
         private bool _isLoading;
         public bool IsLoading
@@ -238,25 +258,41 @@ namespace YoutubeDownloader.ViewModels
             }
         }
 
+        private bool _isDownloading;
+        public bool IsDownloading
+        {
+            get { return _isDownloading; }
+            set
+            {
+                _isDownloading = value;
+                OnPropertyChanged(nameof(IsDownloading));
+            }
+        }
+
+
         public ICommand DownloadCommand { get; }
         public ICommand LoadQueuedVideosCommand { get; }
         public ICommand CommonOpenFileDialogCommand { get; }
         public ICommand CmbFormats_SelectionChangedCommand { get; }
+        public ICommand StartStopDownloadCommand { get; }
+        public ICommand RemoveFromQueueCommand { get; }
 
-        public DownloadViewModel(DownloaderStore downloaderStore)
+        public DownloadViewModel(DownloaderStore downloaderStore, Downloader downloader)
         {
             _downloaderStore = downloaderStore;
+            _downloader = downloader;
 
-            DownloadCommand = new DownloadCommand(_downloaderStore, _downloaderStore.Downloader, this);
-
+            DownloadCommand = new DownloadCommand(_downloaderStore, _downloader, this);
             CommonOpenFileDialogCommand = new RelayCommand(o => SelectOutputFolder());
-
-            LoadQueuedVideosCommand = new LoadQueuedVideosCommand(this, downloaderStore);
+            LoadQueuedVideosCommand = new LoadQueuedVideosCommand(this, _downloaderStore);
+            StartStopDownloadCommand = new StartStopDownloadCommand(this, _downloader);
+            RemoveFromQueueCommand = new RemoveFromQueueCommand(_downloaderStore, _downloader);
 
             _videos = new ObservableCollection<VideoViewModel>();
 
             _downloaderStore.QueuedVideoCreated += OnVideoCreated;
             _downloaderStore.QueuedVideoDeleted += OnVideoDeleted;
+            _downloaderStore.QueuedVideoUpdated += OnVideoUpdated;
 
             _propertyNameToErrorsDictionary = new Dictionary<string, List<string>>();
 
@@ -267,7 +303,21 @@ namespace YoutubeDownloader.ViewModels
             OnPropertyChanged(nameof(VideoTemp));
             _isLoadingVideoTemp = false;
 
+            if (_downloaderStore.DownloaderState == YtdlpDownloader.DownloaderState.Downloading) IsDownloading = true;
+            else IsDownloading = false;
+            _downloaderStore.DownloaderStateChanged += OnDownloaderStateChanged;
+
             this.PropertyChanged += ViewModel_PropertyChanged;
+        }
+
+        private void OnDownloaderStateChanged(object? sender, EventArgs e)
+        {
+            if (_downloaderStore.DownloaderState == YtdlpDownloader.DownloaderState.Downloading) IsDownloading = true;
+            else IsDownloading = false;
+
+            Debug.WriteLine("ViewModel DownloadState: ");
+            Debug.WriteLine(_downloaderStore.DownloaderState);
+            Debug.WriteLine(IsDownloading);
         }
 
         private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -281,12 +331,11 @@ namespace YoutubeDownloader.ViewModels
                         return;
                     }
 
-                    _isLoadingVideoTemp = true;
-                    OnPropertyChanged(nameof(IsLoadingVideoTemp));
+                    IsLoadingVideoTemp = true;
 
                     try
                     {
-                        VideoTemp = await _downloaderStore.Downloader.GetVideoInfo(_videoUrl);
+                        VideoTemp = await _downloader.GetVideoInfo(_videoUrl);
                     }
                     catch (VideoNotFoundException ex)
                     {
@@ -294,28 +343,22 @@ namespace YoutubeDownloader.ViewModels
                         AddError(ex.Message, nameof(VideoUrl));
                         OnPropertyChanged(nameof(VideoUrl));
 
-                        _isLoadingVideoTemp = false;
-                        OnPropertyChanged(nameof(IsLoadingVideoTemp));
+                        IsLoadingVideoTemp = false;
                         break;
                     }
 
                     OnPropertyChanged(nameof(VideoTemp));
-                    _timestampStart = 0;
-                    OnPropertyChanged(nameof(TimestampStart));
-                    _timestampEnd = _videoTemp.Duration;
-                    OnPropertyChanged(nameof(TimestampEnd));
-                    _videoLength = _videoTemp.Duration;
-                    OnPropertyChanged(nameof(VideoLength));
-                    _availableResolutionsVideo = _videoTemp.AvailableResolutionsVideo;
-                    OnPropertyChanged(nameof(AvailableResolutionsVideo));
-                    _availableResolutionsAudio = _videoTemp.AvailableResolutionsAudio;
-                    OnPropertyChanged(nameof(AvailableResolutionsAudio));
-                    _filename = _videoTemp.Title.Replace("\"", "");
-                    OnPropertyChanged(nameof(Filename));
+                    TimestampStart = 0;
+                    TimestampEnd = _videoTemp.Duration;
+                    VideoLength = _videoTemp.Duration;
+                    AvailableResolutionsVideo = _videoTemp.AvailableResolutionsVideo;
+                    AvailableResolutionsAudio = _videoTemp.AvailableResolutionsAudio;
+                    Filename = Regex.Replace(_videoTemp.Title, "[\"/\\\\]", "");
+                    //_filename = _videoTemp.Title.Replace("\"", "").Replace("/", "").Replace();
                     ClearErrors(nameof(Filename));
 
-                    _isLoadingVideoTemp = false;
-                    OnPropertyChanged(nameof(IsLoadingVideoTemp));
+                    IsLoadingVideoTemp = false;
+
                     break;
             }
         }
@@ -327,9 +370,9 @@ namespace YoutubeDownloader.ViewModels
             base.Dispose();
         }
 
-        public static DownloadViewModel LoadViewModel(DownloaderStore downloaderStore)
+        public static DownloadViewModel LoadViewModel(DownloaderStore downloaderStore, Downloader downloader)
         {
-            DownloadViewModel viewModel = new DownloadViewModel(downloaderStore);
+            DownloadViewModel viewModel = new DownloadViewModel(downloaderStore, downloader);
             viewModel.LoadQueuedVideosCommand.Execute(null);
             return viewModel;
         }
@@ -345,6 +388,11 @@ namespace YoutubeDownloader.ViewModels
         {
             VideoViewModel videoViewModel = new VideoViewModel(video);
             _videos.Remove(_videos.Where(i => i.Id == video.Id).Single());
+        }
+
+        private void OnVideoUpdated(object? sender, EventArgs e)
+        {
+            UpdateVideos(_downloaderStore.DownloadQueue);
         }
 
 
