@@ -23,8 +23,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition MaxHeight="150" />
-            <RowDefinition Height="350"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="330"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <TextBox Grid.Row="0" Width="600" Height="30" VerticalContentAlignment="Center" Text="{Binding VideoUrl, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsLoadingVideoTemp, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource RoundedTextbox}" />
@@ -55,15 +55,19 @@
                 <ColumnDefinition Width="1"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            
+
             <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Download Settings" FontSize="18" FontWeight="Regular" Margin="0,0,0,30" Style="{StaticResource LabelTextBlockTheme}"/>
-            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Right" IsEnabled="{Binding VideoTemp, Converter={StaticResource NullToIsEnabledConverter}}" Width="400" Margin="0,0,20,0"> 
+            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Right" IsEnabled="{Binding VideoTemp, Converter={StaticResource NullToIsEnabledConverter}}" Width="400" Margin="0,0,20,0">
 
                 <TextBlock Text="Output Directory" Style="{StaticResource LabelTextBlockTheme}"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,20">
-                    <TextBlock Text="{Binding OutputDir}" Foreground="Gray" FontWeight="Medium" VerticalAlignment="Center" Margin="50,0,50,0"/>
-                    <Button Width="100"  Height="40" Command="{Binding CommonOpenFileDialogCommand}" VerticalAlignment="Center" Style="{StaticResource RoundedButtonTheme}">Change</Button>
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MaxWidth="300"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding OutputDir}" Foreground="Gray" FontWeight="Medium" VerticalAlignment="Center" Margin="20,0,20,0" TextTrimming="WordEllipsis" />
+                    <Button Grid.Column="1" Width="100"  Height="40" Command="{Binding CommonOpenFileDialogCommand}" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource RoundedButtonTheme}">Change</Button>
+                </Grid>
 
                 <TextBlock Text="Filename" Style="{StaticResource LabelTextBlockTheme}"/>
                 <Grid>
@@ -89,14 +93,12 @@
             <Border Grid.Column="1" Grid.Row="1" Background="{StaticResource SecondaryColor}"/>
 
             <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Left" IsEnabled="{Binding VideoTemp, Converter={StaticResource NullToIsEnabledConverter}}" Width="400" Margin="20,0,0,0">
-                <TextBlock Text="Video Format" Style="{StaticResource LabelTextBlockTheme}"/>
+                <TextBlock Text="Format" Style="{StaticResource LabelTextBlockTheme}"/>
                 <ComboBox Height="20" ItemsSource="{Binding AvailableFormats}" SelectedItem="{Binding Format}" Margin="0,0,0,20" Style="{StaticResource ComboBoxTheme }" />
 
-                <TextBlock Text="Video Resolution" Style="{StaticResource LabelTextBlockTheme}"/>
+                <TextBlock Text="Resolution" Style="{StaticResource LabelTextBlockTheme}"/>
 
-                <ComboBox Height="20" Visibility="{Binding IsVideoFormat, Converter={StaticResource BooleanToVisibilityConverter}}" ItemsSource="{Binding AvailableResolutionsVideo}" SelectedItem="{Binding ResolutionVideo}" Style="{StaticResource ComboBoxTheme}" />
-
-                <TextBlock Visibility="{Binding IsVideoFormat, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding ResolutionVideo}"></TextBlock>
+                <ComboBox Height="20" Visibility="{Binding IsVideoFormat, Converter={StaticResource BooleanToVisibilityConverter}}" ItemsSource="{Binding AvailableResolutionsVideo}" SelectedItem="{Binding ResolutionVideo}" Style="{StaticResource ComboBoxTheme}" Margin="0,0,0,15" />
 
                 <ComboBox Height="20" Visibility="{Binding IsVideoFormat, Converter={StaticResource InverseBooleanToVisibilityConverter}}" ItemsSource="{Binding AvailableResolutionsAudio}" SelectedItem="{Binding ResolutionAudio}" Style="{StaticResource ComboBoxTheme}" Margin="0,0,0,15">
                     <ComboBox.ItemTemplate>
@@ -153,11 +155,27 @@
 
         <Grid Grid.Row="3">
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Text="Download queue" Style="{StaticResource HeadingTheme}" Margin="0" FontSize="20" Height="25"/>
+            <DockPanel Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                <TextBlock Grid.Row="0" Text="Download queue" Style="{StaticResource HeadingTheme}" Margin="5 0" FontSize="20" Height="25" />
+                <Button Style="{StaticResource SmallRoundedButtonTheme}" Width="120" Height="30" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" Command="{Binding StartStopDownloadCommand}">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Visibility="{Binding IsDownloading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                            <TextBlock Text="▶" Foreground="{StaticResource PrimaryColor}" Margin="0 0 5 0" />
+                            <TextBlock Text="Download All" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="&#8545;" Foreground="{StaticResource PrimaryColor}" Margin="0 0 5 0" />
+                            <TextBlock Text="Stop Download" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+            </DockPanel>
+
+
 
             <loadingspinnercontrol:LoadingSpinner Grid.Row="1" Thickness="5" Color="Gray" Diameter="100" IsLoading="{Binding IsLoading}"/>
 
@@ -169,9 +187,8 @@
                     Visibility="{Binding HasErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
 
-
                 <ScrollViewer VerticalScrollBarVisibility="Visible" Style="{StaticResource ScrollViewerTheme}">
-                    <ItemsControl Style="{DynamicResource ScrollViewerControlTemplate}" ItemsSource="{Binding Videos}" BorderThickness="1" Margin="5 0 5 0" MinHeight="100"  BorderBrush="{StaticResource SecondaryColorLight}">
+                    <ItemsControl Style="{DynamicResource ScrollViewerControlTemplate}" ItemsSource="{Binding Videos}" BorderThickness="1" Margin="5 0 0 0" MinHeight="50" HorizontalAlignment="Stretch"  BorderBrush="{StaticResource SecondaryColorLight}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border BorderBrush="{StaticResource SecondaryColorLight}" Background="{StaticResource WindowThemeDark}" BorderThickness="1">
@@ -182,6 +199,7 @@
                                             <ColumnDefinition Width="auto"/>
                                             <ColumnDefinition Width="auto"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
 
                                         <Image Grid.Column="0" Source="{Binding Thumbnail}" Height="30" />
@@ -192,6 +210,35 @@
                                             <ContentControl Background="Transparent" VerticalAlignment="Center"/>
                                         </xctk:BusyIndicator>
                                         <TextBlock Grid.Column="4" Text="{Binding DownloadState}" Style="{StaticResource LabelTextBlockTheme}" Visibility="{Binding DownloadState, Converter={StaticResource InverseDownloadStateToVisibilityConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20 0 10 0"/>
+                                        <Button Grid.Column="5" Content="❌" Command="{Binding DataContext.RemoveFromQueueCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Height="30" Width="50" HorizontalAlignment="Center">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="OverridesDefaultStyle" Value="True"/>
+                                                    <Setter Property="Foreground" Value="White" />
+                                                    <Setter Property="Background" Value="Transparent" />
+                                                    <Setter Property="BorderThickness" Value="0" />
+                                                    <Setter Property="ToolTip" Value="Remove from queue." />
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Name="border" 
+                                                                    BorderThickness="0"
+                                                                    BorderBrush="DarkGray" 
+                                                                    CornerRadius="3" 
+                                                                    Background="Transparent">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Control.Foreground" Value="DarkGray" />
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
