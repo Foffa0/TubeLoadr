@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YoutubeDownloader.DbContexts;
 
@@ -10,9 +11,11 @@ using YoutubeDownloader.DbContexts;
 namespace YoutubeDownloader.Migrations
 {
     [DbContext(typeof(DownloaderDbContext))]
-    partial class DownloaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230907095222_filenameInHistory")]
+    partial class filenameInHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.8");
@@ -35,10 +38,6 @@ namespace YoutubeDownloader.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Filename")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Format")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

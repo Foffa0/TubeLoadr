@@ -76,6 +76,8 @@ namespace YoutubeDownloader.Services.VideoCreators
                 Filename = video.Filename,
                 FilePath = video.FilePath,
                 Format = video.Format,
+                StartTime = video.StartTime,
+                EndTime = video.EndTime,
                 Resolution = video.Resolution,
             };
         }
@@ -91,6 +93,8 @@ namespace YoutubeDownloader.Services.VideoCreators
                 Channel = video.Channel,
                 Thumbnail = video.Thumbnail,
                 FilePath = video.FilePath,
+                Filename = video.Filename,
+                Format = video.Format,
             };
         }
     }

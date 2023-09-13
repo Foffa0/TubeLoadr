@@ -15,7 +15,9 @@ namespace YoutubeDownloader.ViewModels
         public string Title => _video.Title;
         public int Duration => _video.Duration;
         public string Thumbnail => _video.Thumbnail;
+        public string Format => _video.Format;
         public string FilePath => _video.FilePath;
+        public string Filename => _video.Filename;
 
         public DownloadedVideoViewModel(DownloadedVideo video)
         {
