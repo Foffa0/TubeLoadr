@@ -59,6 +59,7 @@ namespace YoutubeDownloader.Models
             StartTime = startTime;
             EndTime = endTime;
             Resolution = resolution;
+            DownloadState = YtdlpDownloader.QUEUED;
         }
     }
 }
