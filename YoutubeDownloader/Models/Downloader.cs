@@ -1,19 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
-using YoutubeDownloader.DbContexts;
-using YoutubeDownloader.DTOs;
-using YoutubeDownloader.Migrations;
 using YoutubeDownloader.Services.VideoCreators;
 using YoutubeDownloader.Services.VideoProviders;
 using YoutubeDownloader.Services.yt_dlp;
@@ -24,73 +13,29 @@ namespace YoutubeDownloader.Models
     public class Downloader
     {
 
-        private readonly IVideoCreator _videoCreator;
-        private readonly IVideoProvider _videoProvider;
+        private readonly DownloaderStore _downloaderStore;
 
         private readonly YtdlpDownloader _ytdlpDownloader;
-        private bool _isDownloading;
+        private YtdlpDownloader.DownloaderState _downloaderState;
+        public YtdlpDownloader.DownloaderState DownloaderState { get { return _downloaderState; } }
 
-        private List<Video> _downloadQueue;
-        public List<Video> DownloadQueue { get { return _downloadQueue; } set { _downloadQueue = value; } }
 
-        public Downloader(IVideoProvider videoProvider, IVideoCreator videoCreator) 
-        {   
-            _videoProvider = videoProvider;
-            _videoCreator = videoCreator;
+        public Downloader(DownloaderStore downloaderStore) 
+        {
+            _downloaderStore = downloaderStore;
 
             _ytdlpDownloader = new YtdlpDownloader();
 
-            _isDownloading = false;
-
-            _downloadQueue = new List<Video>();
+            _downloaderState = YtdlpDownloader.DownloaderState.Ready;
+            _downloaderStore.DownloaderState = _downloaderState;
         }
-
-        /// <summary>
-        /// Get all videos that are in the video queue.
-        /// </summary>
-        /// <returns>A list of Videos</returns>
-        public async Task<IEnumerable<Video>> GetQueuedVideos()
-        {
-            return await _videoProvider.GetAllQueuedVideos();
-        }
-
-        public async Task<IEnumerable<DownloadedVideo>> GetVideoHistory()
-        {
-            return await _videoProvider.GetAllVideos();
-        }
-
-        public async Task AddVideoToHistory(DownloadedVideo video)
-        {
-            await _videoCreator.CreateVideo(video);
-        }
-
-        public async Task DeleteDownloadedVideo(DownloadedVideo downloadedVideo)
-        {
-            await _videoCreator.DeleteVideo(downloadedVideo);
-        }
-        public async Task AddVideoToQueue(Video video)
-        {
-            await _videoCreator.CreateQueuedVideo(video);
-        }
-
-        public async Task DeleteQueuedVideo(Video video)
-        {
-            await _videoCreator.DeleteQueuedVideo(video);
-        }
-
-
-        public event Action<Video> VideoCreated;
-        public event Action<Video> VideoDeleted;
-        public event Action<DownloadedVideo> DownloadedVideoCreated;
-        public event Action<DownloadedVideo> DownloadedVideoDeleted;
-
 
         public async Task GetVideoInfoAndAddToQueue(string url, DownloadOptions options)
         {
             Video video = await _ytdlpDownloader.AddToQueue(url, options);
 
-            await AddVideoToQueue(video);
-            VideoCreated?.Invoke(video);
+            await _downloaderStore.AddVideoToQueue(video);
+            DownloadVideo();
         }
 
         public async Task<VideoInfo> GetVideoInfo(string url)
@@ -102,26 +47,55 @@ namespace YoutubeDownloader.Models
 
         public async void DownloadVideo()
         {
-            if (_isDownloading) { return; }
+            if (_downloaderState == YtdlpDownloader.DownloaderState.Downloading) { return; }
+            if (_downloaderStore.DownloadQueue.Count() <= 0) { return; }
 
-            _isDownloading = true;
-
-            await _ytdlpDownloader.DownloadVideo(_downloadQueue.First());
-
-            DownloadedVideo vid = new DownloadedVideo(_downloadQueue.First().Title, _downloadQueue.First().Url, _downloadQueue.First().Duration, _downloadQueue.First().Channel, _downloadQueue.First().Thumbnail, _downloadQueue.First().FilePath);
-            
-            await DeleteQueuedVideo(_downloadQueue.First());
-            VideoDeleted?.Invoke(_downloadQueue.First());
-
-            await AddVideoToHistory(vid);
-            DownloadedVideoCreated?.Invoke(vid);
-
-            if (_downloadQueue.Count() > 0)
+            _downloaderState = YtdlpDownloader.DownloaderState.Downloading;
+            _downloaderStore.DownloaderState = _downloaderState;
+            _downloaderStore.DownloadQueue.First().DownloadState = YtdlpDownloader.DOWNLOADING;
+            _downloaderStore.QueuedVideoUpdate();
+            try
             {
-                _isDownloading = false;
+                await _ytdlpDownloader.DownloadVideo(_downloaderStore.DownloadQueue.First());
+            }
+            catch (TaskCanceledException e)
+            {
+                return;
+            }
+            catch (UnauthorizedAccessException e) 
+            {
+                MessageBox.Show(e.Message,
+                                          "Error while downloading",
+                                          MessageBoxButton.OK,
+                                          MessageBoxImage.Warning);
+                await _downloaderStore.DeleteQueuedVideo(_downloaderStore.DownloadQueue.First());
+                _downloaderState = YtdlpDownloader.DownloaderState.Ready;
+                _downloaderStore.DownloaderState = _downloaderState;
+                return;
+            }
+
+            DownloadedVideo vid = new DownloadedVideo(_downloaderStore.DownloadQueue.First().Title, _downloaderStore.DownloadQueue.First().Url, _downloaderStore.DownloadQueue.First().Duration, _downloaderStore.DownloadQueue.First().Channel, _downloaderStore.DownloadQueue.First().Thumbnail, _downloaderStore.DownloadQueue.First().Format, _downloaderStore.DownloadQueue.First().FilePath, _downloaderStore.DownloadQueue.First().Filename);
+            
+            await _downloaderStore.DeleteQueuedVideo(_downloaderStore.DownloadQueue.First());
+
+            await _downloaderStore.AddVideoToHistory(vid);
+
+            _downloaderState = YtdlpDownloader.DownloaderState.Ready;
+            _downloaderStore.DownloaderState = _downloaderState;
+
+            if (_downloaderStore.DownloadQueue.Count() > 0)
+            {
                 DownloadVideo();
             }
-            _isDownloading = false;
+        }
+
+        public void CancelDownload()
+        {
+            if (_downloaderState != YtdlpDownloader.DownloaderState.Downloading) { return; }
+            _ytdlpDownloader.CancelDownload();
+            _downloaderState = YtdlpDownloader.DownloaderState.Paused;
+            _downloaderStore.DownloaderState = _downloaderState;
+            _downloaderStore.DownloadQueue.First().DownloadState = YtdlpDownloader.QUEUED;
         }
     }
 }
