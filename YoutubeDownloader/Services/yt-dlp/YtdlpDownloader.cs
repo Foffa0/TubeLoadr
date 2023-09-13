@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using YoutubeDLSharp;
+using YoutubeDLSharp.Metadata;
+using YoutubeDLSharp.Options;
 using YoutubeDownloader.Exceptions;
 using YoutubeDownloader.Models;
 
@@ -12,10 +15,32 @@ namespace YoutubeDownloader.Services.yt_dlp
 {
     public class YtdlpDownloader
     {
-        public static string QUEUED = "Queued";
-        public static string DOWNLOADING = "Downloading";
-        public static string DOWNLOADED = "Finished";
-        public static string ERROR = "Error";
+
+        public static readonly string QUEUED = "Queued";
+        public static readonly string DOWNLOADING = "Downloading";
+        public static readonly string DOWNLOADED = "Finished";
+        public static readonly string ERROR = "Error";
+
+        public enum DownloaderState
+        {
+            Paused,
+            Downloading,
+            Ready
+        }
+
+        YoutubeDL ytdl;
+
+        string? dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+        public YtdlpDownloader()
+        {
+            ytdl = new YoutubeDL();
+            ytdl.YoutubeDLPath = dir + @"\Downloadtools\yt-dlp.exe";
+            ytdl.FFmpegPath = dir + @"\Downloadtools\ffmpeg.exe";
+            Debug.WriteLine(ytdl.Version);
+        }
+
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         /// <summary>
         /// Get video metadata from url.
@@ -24,272 +49,223 @@ namespace YoutubeDownloader.Services.yt_dlp
         /// <exception cref="VideoNotFoundException">Thrown if no video exists at the url.</exception>
         public async Task<VideoInfo> GetVideoInfo(string url)
         {
-            ProcessStartInfo info = new ProcessStartInfo("cmd");
-            info.UseShellExecute = false;
-            info.RedirectStandardOutput = true;
-            info.RedirectStandardInput = true;
-            info.CreateNoWindow = true;
-            info.RedirectStandardError = true;
-            info.WorkingDirectory = "D:/Downloads/yt-dlp";
+            var res = await ytdl.RunVideoDataFetch(url);
 
-            VideoInfo video = await Task.Run(async () =>
+            if (res.ErrorOutput != null || res.ErrorOutput.Any())
             {
-                var proc = Process.Start(info);
-                //This will give us the full name path of the executable file:
-                //string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                //This will strip just the working path name:
-                //string strWorkPath = Path.GetDirectoryName(strExeFilePath);
+                Debug.WriteLine("------------------------------------------------------------------");
+                Debug.WriteLine($"Error output: {res.ErrorOutput[0]}");
+            }
 
-                string? dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            // get some video information
+            VideoData video = res.Data;
 
-                string file = dir + @"\yt-dlp";
+            if (video == null) throw new VideoNotFoundException("Youtube video not found");
 
-                Debug.WriteLine(file);
+            string title = video.Title;
+            string uploader = video.Uploader;
+            long? views = video.ViewCount;
+            // all available download formats
+            FormatData[] formats = video.Formats;
 
-                Directory.CreateDirectory(file);
+            List<string> videoResolutions = new List<string>();
+            List<int> audioResolutions = new List<int>();
 
-                proc.StandardInput.WriteLine($"yt-dlp.exe --write-info-json -P {file} -o %(id)s.%(ext)s --skip-download {url}");
-
-                proc.StandardInput.Close();
-                ArgumentNullException.ThrowIfNull(proc);
-                string output = proc.StandardOutput.ReadToEnd();
-                await proc.WaitForExitAsync();
-                Debug.WriteLine(output);
-
-                string SearchStringStart = "Writing video metadata as JSON to:";
-                string SearchStringEnd = ".info.json";
-
-                if (!output.Contains(SearchStringStart))
+            for (int i = 0; i < formats.Length; i++)
+            {
+                if (formats[i].VideoCodec != null && formats[i].VideoCodec != "none")
                 {
-                    throw new VideoNotFoundException("Youtube video not found");
-                }
-
-                 if (output.Contains(SearchStringStart))
-                {
-                    int Start = output.IndexOf(SearchStringStart, 0) + SearchStringStart.Length;
-                    int End = output.IndexOf(SearchStringEnd) + SearchStringEnd.Length;
-                    Debug.WriteLine(Start);
-                    output = output.Substring(Start, End - Start);
-
-                    string SearchString = "yt-dlp";
-                    int fileName = output.IndexOf(SearchString) + SearchString.Length + 1;
-                    output = output.Substring(fileName);
-                    output = output.TrimStart();
-                }
-
-                Dictionary<string, object> metadata;
-
-                using (StreamReader r = new StreamReader($@"yt-dlp/{output}"))
-                {
-                    var json = r.ReadToEnd();
-                    metadata = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-                }
-
-                File.Delete($@"yt-dlp/{output}");
-
-
-                JsonElement thumbnails = (JsonElement)metadata.GetValueOrDefault("thumbnails");
-
-                JsonElement formats = (JsonElement)metadata.GetValueOrDefault("formats");
-
-                string thumbnailUrl = "";
-
-                foreach (var thumbnail in thumbnails.EnumerateArray())
-                {
-                    if (thumbnail.GetProperty("preference").ToString().Equals("0"))
+                    if (formats[i].Height > 300 && videoResolutions.Where(x => x.Contains(formats[i].Height.ToString())).FirstOrDefault() == null)
                     {
-                        thumbnailUrl = thumbnail.GetProperty("url").ToString();
+                        videoResolutions.Add(formats[i].Height.ToString() + "p");
                     }
                 }
-
-                // Get all available resolutions
-                JsonElement resolution_option;
-                var resolutionsVideo = new List<string> { "144p", "240p", "360p", "480p", "720p", "1080p", "1080p60", "1440p", "2160p" };
-
-                List<string> availableResolutionsVideo = new();
-                List<int> availableResolutionsAudio = new();
-
-                foreach (var resolution in formats.EnumerateArray())
+                else if (formats[i].AudioCodec != null && formats[i].AudioBitrate != null)
                 {
-                    if (resolution.TryGetProperty("format_note", out resolution_option))
+                    if (formats[i].AudioBitrate > 30.0 && !audioResolutions.Contains((int)Math.Round((double)formats[i].AudioBitrate)))
                     {
-                        string resolution_string = resolution_option.GetString();
-
-                        // check if the resolution has a 60p tag and remove it to avoid duplicates
-                        if (resolution_string.Contains("p60"))
-                        {
-                            resolution_string = resolution_string.Replace("p60", "p");
-                        }
-
-                        if (resolutionsVideo.Where(x => x.Contains(resolution_string)).FirstOrDefault() != null && availableResolutionsVideo.Where(x => x.Contains(resolution_string)).FirstOrDefault() == null)
-                        {
-                            availableResolutionsVideo.Add(resolution_string);
-                        }
-                    }
-                    if (resolution.TryGetProperty("abr", out resolution_option))
-                    {
-                        if (resolution_option.GetDouble() > 0)
-                        {
-                            availableResolutionsAudio.Add((int)Math.Round(resolution_option.GetDouble(), 0, MidpointRounding.AwayFromZero));
-                        }
+                        audioResolutions.Add((int)Math.Round((double)formats[i].AudioBitrate));
                     }
                 }
-                availableResolutionsVideo.ForEach(p => Debug.WriteLine(p));
+                Debug.WriteLine("Quality: " + formats[i].Quality);
+                Debug.WriteLine("Width: " + formats[i].Width);
+                Debug.WriteLine("AudioBitrate: " + formats[i].AudioBitrate);
+                Debug.WriteLine("Audiochannels: " + formats[i].AudioChannels);
+                Debug.WriteLine("AudioCodec: " + formats[i].AudioCodec);
+                Debug.WriteLine("VideoCodec: " + formats[i].VideoCodec);
+                Debug.WriteLine("VideoBitrate: " + formats[i].VideoBitrate);
+                Debug.WriteLine("Resolution: " + formats[i].Resolution);
+            }
 
-                availableResolutionsAudio.Sort();
+            audioResolutions.Sort();
+            videoResolutions.Sort();
 
-                availableResolutionsAudio.ForEach(p => Debug.WriteLine(p));
-
-
-
-                VideoInfo video = new VideoInfo(metadata.GetValueOrDefault("title").ToString(), metadata.GetValueOrDefault("webpage_url").ToString(), int.Parse(metadata.GetValueOrDefault("duration").ToString()), metadata.GetValueOrDefault("channel").ToString(), thumbnailUrl, availableResolutionsVideo, availableResolutionsAudio);
-                return video;
-            });
-            return video;
+            return new VideoInfo(video.Title, video.WebpageUrl.ToString(), (int)video.Duration, video.Channel, video.Thumbnail, videoResolutions, audioResolutions);
         }
 
         public async Task<Video> AddToQueue(string url, DownloadOptions downloadOptions)
         {
-            ProcessStartInfo info = new ProcessStartInfo("cmd");
-            info.UseShellExecute = false;
-            info.RedirectStandardOutput = true;
-            info.RedirectStandardInput = true;
-            info.CreateNoWindow = true;
-            info.RedirectStandardError = true;
-            info.WorkingDirectory = "D:/Downloads/yt-dlp";
 
-            Video video = await Task.Run(async () =>
+            var res = await ytdl.RunVideoDataFetch(url);
+
+            if (res.ErrorOutput != null || res.ErrorOutput.Any())
             {
-                var proc = Process.Start(info);
-                //This will give us the full name path of the executable file:
-                //string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                //This will strip just the working path name:
-                //string strWorkPath = Path.GetDirectoryName(strExeFilePath);
+                Debug.WriteLine("------------------------------------------------------------------");
+                Debug.WriteLine($"Error output: {res.ErrorOutput[0]}");
+            }
+            // get some video information
+            VideoData videoData = res.Data;
 
-                string? dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
-                string file = dir + @"\yt-dlp";
-
-                Debug.WriteLine(file);
-
-                Directory.CreateDirectory(file);
-
-                proc.StandardInput.WriteLine($"yt-dlp.exe --write-info-json -P {file} -o %(id)s.%(ext)s --skip-download {url}");
-
-                proc.StandardInput.Close();
-                ArgumentNullException.ThrowIfNull(proc);
-                string output = proc.StandardOutput.ReadToEnd();
-                await proc.WaitForExitAsync();
-                Debug.WriteLine(output);
-
-                string SearchStringStart = "Writing video metadata as JSON to:";
-                string SearchStringEnd = ".info.json";
-
-                if (output.Contains(SearchStringStart))
-                {
-                    int Start = output.IndexOf(SearchStringStart, 0) + SearchStringStart.Length;
-                    int End = output.IndexOf(SearchStringEnd) + SearchStringEnd.Length;
-                    Debug.WriteLine(Start);
-                    output = output.Substring(Start, End - Start);
-
-                    string SearchString = "yt-dlp";
-                    int fileName = output.IndexOf(SearchString) + SearchString.Length + 1;
-                    output = output.Substring(fileName);
-                    output = output.TrimStart();
-                }
-
-                Dictionary<string, object> metadata;
-
-                using (StreamReader r = new StreamReader($@"yt-dlp/{output}"))
-                {
-                    var json = r.ReadToEnd();
-                    metadata = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-                }
-                File.Delete($@"yt-dlp/{output}");
-
-
-                JsonElement thumbnails = (JsonElement)metadata.GetValueOrDefault("thumbnails");
-
-                JsonElement formats = (JsonElement)metadata.GetValueOrDefault("formats");
-
-                string thumbnailUrl = "";
-
-                foreach (var thumbnail in thumbnails.EnumerateArray())
-                {
-                    if (thumbnail.GetProperty("preference").ToString().Equals("0"))
-                    {
-                        thumbnailUrl = thumbnail.GetProperty("url").ToString();
-                    }
-                }
-
-                Debug.Write(thumbnailUrl);
-
-
-                Video video = new Video(metadata.GetValueOrDefault("title").ToString(), metadata.GetValueOrDefault("webpage_url").ToString(), int.Parse(metadata.GetValueOrDefault("duration").ToString()), metadata.GetValueOrDefault("channel").ToString(), thumbnailUrl, downloadOptions.Filename, downloadOptions.OutputDir, downloadOptions.Format, downloadOptions.Starttime, downloadOptions.Endtime, downloadOptions.Resolution);
-                return video;
-            });
-            return video;
+            return new Video(videoData.Title, videoData.WebpageUrl, (int)videoData.Duration, videoData.Channel, videoData.Thumbnail, downloadOptions.Filename, downloadOptions.OutputDir, downloadOptions.Format, downloadOptions.Starttime, downloadOptions.Endtime, downloadOptions.Resolution);
         }
 
         public async Task DownloadVideo(Video video)
         {
 
-            ProcessStartInfo info = new ProcessStartInfo("cmd");
-            info.UseShellExecute = false;
-            info.RedirectStandardOutput = true;
-            info.RedirectStandardInput = true;
-            info.CreateNoWindow = true;
-            info.RedirectStandardError = true;
-            info.WorkingDirectory = "D:/Downloads/yt-dlp";
+            OptionSet options;
 
-            video.DownloadState = DOWNLOADING;
-            
-            await Task.Run(async () =>
+            if (video.Format == "mp4" || video.Format == "mkv" || video.Format == "ogg" || video.Format == "webm")
             {
-                var proc = Process.Start(info);
-                proc.OutputDataReceived += new DataReceivedEventHandler(OutputHandler);
-                proc.BeginOutputReadLine();
-
-                string formatOptions = "";
-                string resolutionOptions = "";
-                string posprocessorArgs = "";
-
-                if (video.Format == "mp4" || video.Format == "mkv" || video.Format == "ogg" || video.Format =="webm")
+                DownloadMergeFormat videoFormat = DownloadMergeFormat.Unspecified;
+                switch (video.Format)
                 {
-                    formatOptions = $"--merge-output-format {video.Format}";//$"--recode-video {vid.Format}";
-                    string resolution = video.Resolution.Replace("p", "");
-                    resolutionOptions = $""" "-f bestvideo[height<={resolution}]+bestaudio/best" """;
-                }
-                else
-                {
-                    formatOptions = $"-x --audio-format {video.Format}";
-                    resolutionOptions = $"--audio-quality 128k";
+                    case "mp4":
+                        videoFormat = DownloadMergeFormat.Mp4;
+                        break;
+                    case "webm":
+                        videoFormat = DownloadMergeFormat.Webm;
+                        break;
+                    case "mkv":
+                        videoFormat = DownloadMergeFormat.Mkv;
+                        break;
+                    case "ogg":
+                        videoFormat = DownloadMergeFormat.Ogg;
+                        break;
                 }
 
-                if (video.StartTime != 0 || video.EndTime < video.Duration)
+                string resolution = video.Resolution.Replace("p", "");
+
+                options = new OptionSet()
                 {
-                    TimeSpan start = TimeSpan.FromSeconds(video.StartTime);
+                    Format = $"bestvideo[height<={resolution}]+bestaudio/best",
+                    //AudioFormat = AudioConversionFormat.Best,
+                    IgnoreErrors = false,
+                    NoPlaylist = true,
+                    Downloader = "m3u8:ffmpeg",
+                    //DownloaderArgs = "ffmpeg:-nostats -loglevel 0",
+                    Output = $"{video.Filename}.%(ext)s",
+                    Paths = video.FilePath,
+                    MergeOutputFormat = videoFormat,
+                    RestrictFilenames = false,
+                    ForceOverwrites = false,
+                    NoOverwrites = true,
+                    NoPart = true,
+                    NoMtime = true,
+                    FfmpegLocation = dir + @"\Downloadtools\ffmpeg.exe",
+                    //Exec = "echo outfile: {}"
+                };
+            }
+            else
+            {
+                AudioConversionFormat audioFormat = AudioConversionFormat.Best;
 
-                    TimeSpan end = TimeSpan.FromSeconds(video.EndTime);
-
-                    posprocessorArgs = $"""--postprocessor-args "-ss {start.ToString("hh':'mm':'ss")} -to {end}" """;
+                switch (video.Format)
+                {
+                    case "mp3":
+                        audioFormat = AudioConversionFormat.Mp3;
+                        break;
+                    case "wav":
+                        audioFormat = AudioConversionFormat.Wav;
+                        break;
                 }
 
-                proc.StandardInput.WriteLine($""""yt-dlp.exe --ffmpeg-location D:/Downloads/yt-dlp --prefer-ffmpeg --no-mtime {formatOptions} {resolutionOptions} {posprocessorArgs} -o "{video.Filename}.%(ext)s" -P {video.FilePath} {video.Url}"""");
+                Debug.WriteLine(video.Format + " und " + video.Resolution + " Format " + audioFormat);
 
-                proc.StandardInput.Close();
-                ArgumentNullException.ThrowIfNull(proc);
-                //string output = proc.StandardOutput.ReadToEnd();
-                //Debug.WriteLine(output);
-                await proc.WaitForExitAsync();
+                options = new OptionSet()
+                {
+                    AudioFormat = audioFormat,
+                    //AudioQuality = byte.Parse(video.Resolution),
+                    IgnoreErrors = false,
+                    //IgnoreConfig = true,
+                    Format = $"bestaudio[abr<={video.Resolution}]",
+                    NoPlaylist = true,
+                    Downloader = "m3u8:ffmpeg",
+                    DownloaderArgs = "ffmpeg:-nostats -loglevel 0",
+                    Output = $"{video.Filename}.%(ext)s",
+                    Paths = video.FilePath,
+                    RestrictFilenames = false,
+                    ForceOverwrites = false,
+                    KeepVideo = false,
+                    NoOverwrites = true,
+                    NoPart = true,
+                    NoMtime = true,
+                    FfmpegLocation = dir + @"\Downloadtools\ffmpeg.exe",
+                    Exec = "echo outfile: {}",
+                };
+            }
 
-            });
+            if (video.StartTime != 0 || video.EndTime < video.Duration)
+            {
+                TimeSpan start = TimeSpan.FromSeconds(video.StartTime);
+
+                TimeSpan end = TimeSpan.FromSeconds(video.EndTime);
+
+                Debug.WriteLine(start.ToString("hh':'mm':'ss"));
+                Debug.WriteLine(end.ToString("hh':'mm':'ss"));
+
+                options.PostprocessorArgs = new[]
+                {
+                    $"ffmpeg:-ss {start.ToString("hh':'mm':'ss")} -to {end.ToString("hh':'mm':'ss")}"
+                };
+            }
+
+            // a progress handler with a callback that updates a progress bar
+            var progress = new Progress<DownloadProgress>(p => Debug.WriteLine(p.Progress.ToString()));
+            video.DownloadState = DOWNLOADING;
+
+            RunResult<string> res = await ytdl.RunWithOptions(video.Url, options, progress: progress, ct: cts.Token);
+
+            if (video.Format == "mp4" || video.Format == "mkv" || video.Format == "ogg" || video.Format == "webm")
+            {
+                res = await ytdl.RunWithOptions(video.Url, options, progress: progress, ct: cts.Token);
+            }
+            else
+            {
+                res = await ytdl.RunAudioDownload(video.Url, overrideOptions: options, progress: progress, ct: cts.Token);
+            }
+
+            Debug.WriteLine(res.Success);
+            Debug.WriteLine(res.Data.ToString());
+
+            if (res.ErrorOutput != null || res.ErrorOutput.Any())
+            {
+                Debug.WriteLine("-----------------hhhhhhhhhhh-------------------------------------------------");
+                for (int i = 0; i<res.ErrorOutput.Length; i++) 
+                {
+                    Debug.WriteLine($"Error output: {res.ErrorOutput[i]}");
+                }
+            }
+
+            if (!res.Success)
+            {
+                for (int i = 0; i < res.ErrorOutput.Length; i++)
+                {
+                    if (res.ErrorOutput[i].Contains("ERROR"))
+                    {
+                        if (res.ErrorOutput[i].Contains("[Errno 13]"))
+                        {
+                            throw new UnauthorizedAccessException(res.ErrorOutput[i].ToString());
+                        }
+                    }
+                } 
+            }
         }
 
-        static void OutputHandler(object sendingProcess, DataReceivedEventArgs outLine)
+        public void CancelDownload()
         {
-            //* Do your stuff with the output (write to console/log/StringBuilder)
-            Debug.WriteLine(outLine.Data);
+            cts.Cancel();
+            cts.Dispose();
+            cts = new CancellationTokenSource();
         }
     }
 }
