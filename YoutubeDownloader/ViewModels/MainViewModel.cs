@@ -20,15 +20,15 @@ namespace YoutubeDownloader.ViewModels
 
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
 
-        public MainViewModel(NavigationStore navigationStore, NavigationService downloadNavigationService, NavigationService downloadHistoryNavigationService, NavigationService aboutViewNavigationService)
+        public MainViewModel(NavigationStore navigationStore, NavigationService<DownloadViewModel> downloadNavigationService, NavigationService<DownloadHistoryViewModel> downloadHistoryNavigationService, NavigationService<AboutViewModel> aboutViewNavigationService)
         {
             _navigationStore = navigationStore;
 
             _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
 
-            DownloadCommand = new NavigateCommand(downloadNavigationService);
-            DownloadHistoryCommand = new NavigateCommand(downloadHistoryNavigationService);
-            AboutCommand = new NavigateCommand(aboutViewNavigationService);
+            DownloadCommand = new NavigateCommand<DownloadViewModel>(downloadNavigationService);
+            DownloadHistoryCommand = new NavigateCommand<DownloadHistoryViewModel>(downloadHistoryNavigationService);
+            AboutCommand = new NavigateCommand<AboutViewModel>(aboutViewNavigationService);
         }
 
         private void OnCurrentViewModelChanged()

@@ -1,21 +1,19 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using YoutubeDownloader.Models;
-using YoutubeDownloader.Stores;
 using YoutubeDownloader.ViewModels;
 
 namespace YoutubeDownloader.Commands
 {
-    class DownloadCommand : AsyncCommandBase
+    public class DownloadCommand : AsyncCommandBase
     {
-        private readonly DownloaderStore _downloaderStore;
         private readonly Downloader _downloader;
         private readonly DownloadViewModel _downloadViewModel;
 
-        public DownloadCommand(DownloaderStore downloaderStore, Downloader downloader, DownloadViewModel downloadViewModel) 
+        public DownloadCommand(Downloader downloader, DownloadViewModel downloadViewModel) 
         {
-            _downloaderStore = downloaderStore;
             _downloader = downloader;
 
             _downloadViewModel = downloadViewModel;
@@ -33,7 +31,6 @@ namespace YoutubeDownloader.Commands
             /*try
             {*/
             string resolution = _downloadViewModel.IsVideoFormat ? _downloadViewModel.ResolutionVideo : _downloadViewModel.ResolutionAudio.ToString();
-
 
             DownloadOptions downloadOptions = new DownloadOptions(_downloadViewModel.Filename, _downloadViewModel.OutputDir, _downloadViewModel.Format, _downloadViewModel.TimestampStart, _downloadViewModel.TimestampEnd, resolution);
 

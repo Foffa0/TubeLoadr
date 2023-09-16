@@ -1,4 +1,6 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Serilog.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,10 +18,11 @@ using YoutubeDownloader.Stores;
 
 namespace YoutubeDownloader.ViewModels
 {
-    class DownloadViewModel : ViewModelBase, INotifyDataErrorInfo
+    public class DownloadViewModel : ViewModelBase, INotifyDataErrorInfo
     {
         private readonly DownloaderStore _downloaderStore;
         private readonly Downloader _downloader;
+        private readonly ILogger<DownloadViewModel> _logger;
 
         // Download options
         private string _videoUrl;
@@ -277,12 +280,13 @@ namespace YoutubeDownloader.ViewModels
         public ICommand StartStopDownloadCommand { get; }
         public ICommand RemoveFromQueueCommand { get; }
 
-        public DownloadViewModel(DownloaderStore downloaderStore, Downloader downloader)
+        public DownloadViewModel(DownloaderStore downloaderStore, Downloader downloader, ILogger<DownloadViewModel> downloadViewLogger)
         {
             _downloaderStore = downloaderStore;
             _downloader = downloader;
+            _logger = downloadViewLogger;
 
-            DownloadCommand = new DownloadCommand(_downloaderStore, _downloader, this);
+            DownloadCommand = new DownloadCommand(_downloader, this);
             CommonOpenFileDialogCommand = new RelayCommand(o => SelectOutputFolder());
             LoadQueuedVideosCommand = new LoadQueuedVideosCommand(this, _downloaderStore);
             StartStopDownloadCommand = new StartStopDownloadCommand(this, _downloader);
@@ -314,10 +318,6 @@ namespace YoutubeDownloader.ViewModels
         {
             if (_downloaderStore.DownloaderState == YtdlpDownloader.DownloaderState.Downloading) IsDownloading = true;
             else IsDownloading = false;
-
-            Debug.WriteLine("ViewModel DownloadState: ");
-            Debug.WriteLine(_downloaderStore.DownloaderState);
-            Debug.WriteLine(IsDownloading);
         }
 
         private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -342,6 +342,8 @@ namespace YoutubeDownloader.ViewModels
                         ClearErrors(nameof(VideoUrl));
                         AddError(ex.Message, nameof(VideoUrl));
                         OnPropertyChanged(nameof(VideoUrl));
+
+                        _logger.LogWarning("Video not found");
 
                         IsLoadingVideoTemp = false;
                         break;
@@ -370,9 +372,9 @@ namespace YoutubeDownloader.ViewModels
             base.Dispose();
         }
 
-        public static DownloadViewModel LoadViewModel(DownloaderStore downloaderStore, Downloader downloader)
+        public static DownloadViewModel LoadViewModel(DownloaderStore downloaderStore, Downloader downloader, ILogger<DownloadViewModel> logger)
         {
-            DownloadViewModel viewModel = new DownloadViewModel(downloaderStore, downloader);
+            DownloadViewModel viewModel = new DownloadViewModel(downloaderStore, downloader, logger);
             viewModel.LoadQueuedVideosCommand.Execute(null);
             return viewModel;
         }

@@ -55,13 +55,13 @@ namespace YoutubeDownloader.ViewModels
         public ICommand OpenFolderCommand { get; }
 
 
-        public DownloadHistoryViewModel(DownloaderStore downloaderStore, NavigationService downloadViewNavigationService)
+        public DownloadHistoryViewModel(DownloaderStore downloaderStore, NavigationService<DownloadViewModel> downloadViewNavigationService)
         {
             _downloaderStore = downloaderStore;
 
             LoadHistoryVideosCommand = new LoadHistoryVideosCommand(this, _downloaderStore);
 
-            LoadDownloadViewCommand = new NavigateCommand(downloadViewNavigationService);
+            LoadDownloadViewCommand = new NavigateCommand<DownloadViewModel>(downloadViewNavigationService);
 
             RemoveFromHistoryCommand = new RemoveFromHistoryCommand(this, _downloaderStore);
 
@@ -92,7 +92,7 @@ namespace YoutubeDownloader.ViewModels
             _videos.Remove(_videos.Where(i => i.Id == video.Id).Single());
         }
 
-        public static DownloadHistoryViewModel LoadViewModel(DownloaderStore downloaderStore, NavigationService downloadViewNavigationService)
+        public static DownloadHistoryViewModel LoadViewModel(DownloaderStore downloaderStore, NavigationService<DownloadViewModel> downloadViewNavigationService)
         {
             DownloadHistoryViewModel viewModel = new DownloadHistoryViewModel(downloaderStore, downloadViewNavigationService);
             viewModel.LoadHistoryVideosCommand.Execute(null);

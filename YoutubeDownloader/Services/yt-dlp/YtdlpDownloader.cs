@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -21,6 +22,9 @@ namespace YoutubeDownloader.Services.yt_dlp
         public static readonly string DOWNLOADED = "Finished";
         public static readonly string ERROR = "Error";
 
+        /// <summary>
+        /// Represents the downloader state.
+        /// </summary>
         public enum DownloaderState
         {
             Paused,
@@ -28,19 +32,29 @@ namespace YoutubeDownloader.Services.yt_dlp
             Ready
         }
 
+
+
+        private ILogger<YtdlpDownloader> _logger;
         YoutubeDL ytdl;
 
         string? dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        private CancellationTokenSource cts;
 
-        public YtdlpDownloader()
+
+        public YtdlpDownloader(ILogger<YtdlpDownloader> logger)
         {
+            _logger = logger;
             ytdl = new YoutubeDL();
             ytdl.YoutubeDLPath = dir + @"\Downloadtools\yt-dlp.exe";
             ytdl.FFmpegPath = dir + @"\Downloadtools\ffmpeg.exe";
-            Debug.WriteLine(ytdl.Version);
+
+
+            cts = new CancellationTokenSource();
+
+            _logger.LogInformation($"yt-dlp version: {ytdl.Version}");
         }
 
-        private CancellationTokenSource cts = new CancellationTokenSource();
+
 
         /// <summary>
         /// Get video metadata from url.
@@ -54,7 +68,18 @@ namespace YoutubeDownloader.Services.yt_dlp
             if (res.ErrorOutput != null || res.ErrorOutput.Any())
             {
                 Debug.WriteLine("------------------------------------------------------------------");
-                Debug.WriteLine($"Error output: {res.ErrorOutput[0]}");
+                for(int i = 0; i < res.ErrorOutput.Length; i++) Debug.WriteLine($"Error output: {res.ErrorOutput[i]}");
+            }
+
+            if (!res.Success)
+            {
+                for (int i = 0; i < res.ErrorOutput.Length; i++)
+                {
+                    if (res.ErrorOutput[i].Contains("ERROR"))
+                    {
+                        _logger.LogError("Yt-dlp: " + res.ErrorOutput[i]);
+                    }
+                }
             }
 
             // get some video information
@@ -68,6 +93,7 @@ namespace YoutubeDownloader.Services.yt_dlp
             // all available download formats
             FormatData[] formats = video.Formats;
 
+            // Collect all available resolutions
             List<string> videoResolutions = new List<string>();
             List<int> audioResolutions = new List<int>();
 
@@ -87,14 +113,6 @@ namespace YoutubeDownloader.Services.yt_dlp
                         audioResolutions.Add((int)Math.Round((double)formats[i].AudioBitrate));
                     }
                 }
-                Debug.WriteLine("Quality: " + formats[i].Quality);
-                Debug.WriteLine("Width: " + formats[i].Width);
-                Debug.WriteLine("AudioBitrate: " + formats[i].AudioBitrate);
-                Debug.WriteLine("Audiochannels: " + formats[i].AudioChannels);
-                Debug.WriteLine("AudioCodec: " + formats[i].AudioCodec);
-                Debug.WriteLine("VideoCodec: " + formats[i].VideoCodec);
-                Debug.WriteLine("VideoBitrate: " + formats[i].VideoBitrate);
-                Debug.WriteLine("Resolution: " + formats[i].Resolution);
             }
 
             audioResolutions.Sort();
@@ -102,6 +120,8 @@ namespace YoutubeDownloader.Services.yt_dlp
 
             return new VideoInfo(video.Title, video.WebpageUrl.ToString(), (int)video.Duration, video.Channel, video.Thumbnail, videoResolutions, audioResolutions);
         }
+
+
 
         public async Task<Video> AddToQueue(string url, DownloadOptions downloadOptions)
         {
@@ -113,15 +133,35 @@ namespace YoutubeDownloader.Services.yt_dlp
                 Debug.WriteLine("------------------------------------------------------------------");
                 Debug.WriteLine($"Error output: {res.ErrorOutput[0]}");
             }
-            // get some video information
+
+            if (!res.Success)
+            {
+                for (int i = 0; i < res.ErrorOutput.Length; i++)
+                {
+                    if (res.ErrorOutput[i].Contains("ERROR"))
+                    {
+                        _logger.LogError("Yt-dlp: " + res.ErrorOutput[i]);
+                    }
+                }
+            }
+
             VideoData videoData = res.Data;
 
             return new Video(videoData.Title, videoData.WebpageUrl, (int)videoData.Duration, videoData.Channel, videoData.Thumbnail, downloadOptions.Filename, downloadOptions.OutputDir, downloadOptions.Format, downloadOptions.Starttime, downloadOptions.Endtime, downloadOptions.Resolution);
         }
 
+
+
+        /// <summary>
+        /// Download a video from youtube.
+        /// </summary>
+        /// <param name="video">The video to download.</param>
+        /// <returns></returns>
+        /// <exception cref="UnauthorizedAccessException">Raised if the access to the download directory is denied.</exception>
         public async Task DownloadVideo(Video video)
         {
 
+            // Set up the download options for video or audio formats.
             OptionSet options;
 
             if (video.Format == "mp4" || video.Format == "mkv" || video.Format == "ogg" || video.Format == "webm")
@@ -179,7 +219,6 @@ namespace YoutubeDownloader.Services.yt_dlp
                         break;
                 }
 
-                Debug.WriteLine(video.Format + " und " + video.Resolution + " Format " + audioFormat);
 
                 options = new OptionSet()
                 {
@@ -200,10 +239,10 @@ namespace YoutubeDownloader.Services.yt_dlp
                     NoPart = true,
                     NoMtime = true,
                     FfmpegLocation = dir + @"\Downloadtools\ffmpeg.exe",
-                    Exec = "echo outfile: {}",
                 };
             }
 
+            // Check if only a part of the video needs to be downloaded
             if (video.StartTime != 0 || video.EndTime < video.Duration)
             {
                 TimeSpan start = TimeSpan.FromSeconds(video.StartTime);
@@ -219,11 +258,11 @@ namespace YoutubeDownloader.Services.yt_dlp
                 };
             }
 
-            // a progress handler with a callback that updates a progress bar
             var progress = new Progress<DownloadProgress>(p => Debug.WriteLine(p.Progress.ToString()));
+
             video.DownloadState = DOWNLOADING;
 
-            RunResult<string> res = await ytdl.RunWithOptions(video.Url, options, progress: progress, ct: cts.Token);
+            RunResult<string> res; //= await ytdl.RunWithOptions(video.Url, options, progress: progress, ct: cts.Token);
 
             if (video.Format == "mp4" || video.Format == "mkv" || video.Format == "ogg" || video.Format == "webm")
             {
@@ -234,8 +273,6 @@ namespace YoutubeDownloader.Services.yt_dlp
                 res = await ytdl.RunAudioDownload(video.Url, overrideOptions: options, progress: progress, ct: cts.Token);
             }
 
-            Debug.WriteLine(res.Success);
-            Debug.WriteLine(res.Data.ToString());
 
             if (res.ErrorOutput != null || res.ErrorOutput.Any())
             {
@@ -252,6 +289,7 @@ namespace YoutubeDownloader.Services.yt_dlp
                 {
                     if (res.ErrorOutput[i].Contains("ERROR"))
                     {
+                        _logger.LogError("Yt-dlp: " + res.ErrorOutput[i]);
                         if (res.ErrorOutput[i].Contains("[Errno 13]"))
                         {
                             throw new UnauthorizedAccessException(res.ErrorOutput[i].ToString());
@@ -260,7 +298,9 @@ namespace YoutubeDownloader.Services.yt_dlp
                 } 
             }
         }
-
+        /// <summary>
+        /// Cancel the download process.
+        /// </summary>
         public void CancelDownload()
         {
             cts.Cancel();

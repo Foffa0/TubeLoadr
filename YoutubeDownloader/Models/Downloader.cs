@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,16 +21,22 @@ namespace YoutubeDownloader.Models
         public YtdlpDownloader.DownloaderState DownloaderState { get { return _downloaderState; } }
 
 
-        public Downloader(DownloaderStore downloaderStore) 
+        public Downloader(DownloaderStore downloaderStore, ILogger<YtdlpDownloader> logger) 
         {
             _downloaderStore = downloaderStore;
 
-            _ytdlpDownloader = new YtdlpDownloader();
+            _ytdlpDownloader = new YtdlpDownloader(logger);
 
             _downloaderState = YtdlpDownloader.DownloaderState.Ready;
             _downloaderStore.DownloaderState = _downloaderState;
         }
 
+        /// <summary>
+        /// Gets the metadata from a youtube url and adds the video to the downloadqueue.
+        /// </summary>
+        /// <param name="url">The youtube url.</param>
+        /// <param name="options">Download options including the format and resolution.</param>
+        /// <returns></returns>
         public async Task GetVideoInfoAndAddToQueue(string url, DownloadOptions options)
         {
             Video video = await _ytdlpDownloader.AddToQueue(url, options);
@@ -38,6 +45,11 @@ namespace YoutubeDownloader.Models
             DownloadVideo();
         }
 
+        /// <summary>
+        /// Gets the metadata from a youtube url.
+        /// </summary>
+        /// <param name="url">The youtube url.</param>
+        /// <returns>A <see cref="VideoInfo"/> object containing metadata information.</returns>
         public async Task<VideoInfo> GetVideoInfo(string url)
         {
             VideoInfo video = await _ytdlpDownloader.GetVideoInfo(url);
@@ -45,6 +57,10 @@ namespace YoutubeDownloader.Models
             return video;
         }
 
+
+        /// <summary>
+        /// Download the first video in queue.
+        /// </summary>
         public async void DownloadVideo()
         {
             if (_downloaderState == YtdlpDownloader.DownloaderState.Downloading) { return; }
@@ -89,6 +105,9 @@ namespace YoutubeDownloader.Models
             }
         }
 
+        /// <summary>
+        /// Cancels the current download.
+        /// </summary>
         public void CancelDownload()
         {
             if (_downloaderState != YtdlpDownloader.DownloaderState.Downloading) { return; }
