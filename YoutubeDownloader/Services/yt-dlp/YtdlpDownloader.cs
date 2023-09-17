@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +36,8 @@ namespace YoutubeDownloader.Services.yt_dlp
         private ILogger<YtdlpDownloader> _logger;
         YoutubeDL ytdl;
 
-        string? dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        string? dir = System.IO.Path.GetDirectoryName(Environment.ProcessPath); //System.IO.Path.GetFullPath(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
         private CancellationTokenSource cts;
 
 
@@ -47,7 +47,6 @@ namespace YoutubeDownloader.Services.yt_dlp
             ytdl = new YoutubeDL();
             ytdl.YoutubeDLPath = dir + @"\Downloadtools\yt-dlp.exe";
             ytdl.FFmpegPath = dir + @"\Downloadtools\ffmpeg.exe";
-
 
             cts = new CancellationTokenSource();
 
@@ -68,7 +67,7 @@ namespace YoutubeDownloader.Services.yt_dlp
             if (res.ErrorOutput != null || res.ErrorOutput.Any())
             {
                 Debug.WriteLine("------------------------------------------------------------------");
-                for(int i = 0; i < res.ErrorOutput.Length; i++) Debug.WriteLine($"Error output: {res.ErrorOutput[i]}");
+                for (int i = 0; i < res.ErrorOutput.Length; i++) Debug.WriteLine($"Error output: {res.ErrorOutput[i]}");
             }
 
             if (!res.Success)
@@ -277,7 +276,7 @@ namespace YoutubeDownloader.Services.yt_dlp
             if (res.ErrorOutput != null || res.ErrorOutput.Any())
             {
                 Debug.WriteLine("-----------------hhhhhhhhhhh-------------------------------------------------");
-                for (int i = 0; i<res.ErrorOutput.Length; i++) 
+                for (int i = 0; i < res.ErrorOutput.Length; i++)
                 {
                     Debug.WriteLine($"Error output: {res.ErrorOutput[i]}");
                 }
@@ -295,7 +294,7 @@ namespace YoutubeDownloader.Services.yt_dlp
                             throw new UnauthorizedAccessException(res.ErrorOutput[i].ToString());
                         }
                     }
-                } 
+                }
             }
         }
         /// <summary>
