@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using System.Configuration;
 using System.Threading.Tasks;
 using YoutubeDownloader.Models;
 using YoutubeDownloader.ViewModels;
@@ -11,8 +10,8 @@ namespace YoutubeDownloader.Commands
     {
         private readonly Downloader _downloader;
         private readonly DownloadViewModel _downloadViewModel;
-
-        public DownloadCommand(Downloader downloader, DownloadViewModel downloadViewModel) 
+        private readonly Configuration AppConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+        public DownloadCommand(Downloader downloader, DownloadViewModel downloadViewModel)
         {
             _downloader = downloader;
 
@@ -30,6 +29,14 @@ namespace YoutubeDownloader.Commands
         {
             /*try
             {*/
+            _downloadViewModel.IsLoadingAddToQueue = true;
+            if (!AppConfig.AppSettings.Settings["downloadDirectory"].Value.Equals(_downloadViewModel.OutputDir))
+            {
+                AppConfig.AppSettings.Settings["downloadDirectory"].Value = _downloadViewModel.OutputDir;
+                AppConfig.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection(AppConfig.AppSettings.SectionInformation.Name);
+            }
+
             string resolution = _downloadViewModel.IsVideoFormat ? _downloadViewModel.ResolutionVideo : _downloadViewModel.ResolutionAudio.ToString();
 
             DownloadOptions downloadOptions = new DownloadOptions(_downloadViewModel.Filename, _downloadViewModel.OutputDir, _downloadViewModel.Format, _downloadViewModel.TimestampStart, _downloadViewModel.TimestampEnd, resolution);
@@ -38,6 +45,8 @@ namespace YoutubeDownloader.Commands
             _downloadViewModel.VideoUrl = string.Empty;
             _downloadViewModel.Filename = string.Empty;
             _downloadViewModel.VideoTemp = null;
+
+            _downloadViewModel.IsLoadingAddToQueue = false;
             /*}
             catch (Exception) 
             {

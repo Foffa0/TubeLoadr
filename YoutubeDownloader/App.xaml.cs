@@ -6,13 +6,8 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using YoutubeDownloader.Commands;
 using YoutubeDownloader.DbContexts;
 using YoutubeDownloader.Models;
 using YoutubeDownloader.Services;
@@ -66,7 +61,7 @@ namespace YoutubeDownloader
                     services.AddSingleton<Func<AboutViewModel>>((s) => () => s.GetRequiredService<AboutViewModel>());
                     services.AddSingleton<NavigationService<AboutViewModel>>();
 
-                   // services.AddSingleton<DownloadCommand>();
+                    // services.AddSingleton<DownloadCommand>();
 
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton(s => new MainWindow()
@@ -75,6 +70,14 @@ namespace YoutubeDownloader
                     });
                 })
                 .Build();
+
+            Configuration AppConfig = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetEntryAssembly().Location);
+            if (AppConfig.AppSettings.Settings["downloadDirectory"] == null)
+            {
+                AppConfig.AppSettings.Settings.Add("downloadDirectory", "");
+            }
+            AppConfig.Save(ConfigurationSaveMode.Modified);
+            System.Configuration.ConfigurationManager.RefreshSection(AppConfig.AppSettings.SectionInformation.Name);
         }
 
         private DownloadViewModel CreateDownloadViewModel(IServiceProvider s)
@@ -101,7 +104,6 @@ namespace YoutubeDownloader
             AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
             {
                 var loggerFactory = _host.Services.GetRequiredService<ILogger<MainWindow>>();
-                //var logger = loggerFactory.CreateLogger<Program>();
                 loggerFactory.LogError(args.ExceptionObject as Exception, "An error happened");
             };
 
@@ -130,19 +132,5 @@ namespace YoutubeDownloader
             base.OnExit(e);
         }
 
-       /* private DownloadViewModel CreateDownloadViewModel()
-        {
-            return DownloadViewModel.LoadViewModel(_downloaderStore, _downloader);
-        }
-
-        private DownloadHistoryViewModel CreateDownloadHistoryViewModel()
-        {
-            return DownloadHistoryViewModel.LoadViewModel(_downloaderStore, new NavigationService(_navigationStore, CreateDownloadViewModel));
-        }
-
-        private ViewModelBase CreateAboutViewModel()
-        {
-            return new AboutViewModel();
-        }*/
     }
 }

@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Serilog.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
@@ -23,9 +22,10 @@ namespace YoutubeDownloader.ViewModels
         private readonly DownloaderStore _downloaderStore;
         private readonly Downloader _downloader;
         private readonly ILogger<DownloadViewModel> _logger;
+        Configuration AppConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-        // Download options
-        private string _videoUrl;
+    // Download options
+    private string _videoUrl;
         public string VideoUrl
         {
             get
@@ -261,6 +261,22 @@ namespace YoutubeDownloader.ViewModels
             }
         }
 
+
+        private bool _isLoadingAddToQueue;
+        public bool IsLoadingAddToQueue
+        {
+            get
+            {
+                return _isLoadingAddToQueue;
+            }
+            set
+            {
+                _isLoadingAddToQueue = value;
+                OnPropertyChanged(nameof(IsLoadingAddToQueue));
+            }
+        }
+
+
         private bool _isDownloading;
         public bool IsDownloading
         {
@@ -300,19 +316,31 @@ namespace YoutubeDownloader.ViewModels
 
             _propertyNameToErrorsDictionary = new Dictionary<string, List<string>>();
 
-            _outputDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var DownloadSettingSection = AppConfig.GetSection("DownloadSettings");
+
+            if (!string.IsNullOrEmpty(AppConfig.AppSettings.Settings["downloadDirectory"].Value))
+            {
+                _outputDir = AppConfig.AppSettings.Settings["downloadDirectory"].Value;
+            }
+            else
+            {
+                _outputDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            }
             _timestampStart = 10;
             IsVideoFormat = true;
             _videoTemp = null;
             OnPropertyChanged(nameof(VideoTemp));
             _isLoadingVideoTemp = false;
 
+            _isLoadingAddToQueue = false;
+
             if (_downloaderStore.DownloaderState == YtdlpDownloader.DownloaderState.Downloading) IsDownloading = true;
             else IsDownloading = false;
             _downloaderStore.DownloaderStateChanged += OnDownloaderStateChanged;
 
-            this.PropertyChanged += ViewModel_PropertyChanged;
+            PropertyChanged += ViewModel_PropertyChanged;
         }
+
 
         private void OnDownloaderStateChanged(object? sender, EventArgs e)
         {
