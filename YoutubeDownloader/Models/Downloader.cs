@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using YoutubeDownloader.Services.VideoCreators;
-using YoutubeDownloader.Services.VideoProviders;
 using YoutubeDownloader.Services.yt_dlp;
 using YoutubeDownloader.Stores;
 
@@ -21,7 +18,7 @@ namespace YoutubeDownloader.Models
         public YtdlpDownloader.DownloaderState DownloaderState { get { return _downloaderState; } }
 
 
-        public Downloader(DownloaderStore downloaderStore, ILogger<YtdlpDownloader> logger) 
+        public Downloader(DownloaderStore downloaderStore, ILogger<YtdlpDownloader> logger)
         {
             _downloaderStore = downloaderStore;
 
@@ -78,7 +75,7 @@ namespace YoutubeDownloader.Models
             {
                 return;
             }
-            catch (UnauthorizedAccessException e) 
+            catch (UnauthorizedAccessException e)
             {
                 MessageBox.Show(e.Message,
                                           "Error while downloading",
@@ -91,7 +88,7 @@ namespace YoutubeDownloader.Models
             }
 
             DownloadedVideo vid = new DownloadedVideo(_downloaderStore.DownloadQueue.First().Title, _downloaderStore.DownloadQueue.First().Url, _downloaderStore.DownloadQueue.First().Duration, _downloaderStore.DownloadQueue.First().Channel, _downloaderStore.DownloadQueue.First().Thumbnail, _downloaderStore.DownloadQueue.First().Format, _downloaderStore.DownloadQueue.First().FilePath, _downloaderStore.DownloadQueue.First().Filename);
-            
+
             await _downloaderStore.DeleteQueuedVideo(_downloaderStore.DownloadQueue.First());
 
             await _downloaderStore.AddVideoToHistory(vid);

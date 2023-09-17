@@ -49,19 +49,7 @@ namespace YoutubeDownloader.Stores
 
             _videos = new List<DownloadedVideo>();
             _downloadQueue = new List<Video>();
-
-            /*_downloader.VideoCreated += OnVideoAddedToQueue;
-            _downloader.VideoDeleted += OnVideoRemovedFromQueue;
-            _downloader.DownloadedVideoCreated += OnDownloadedVideoCreated; //Todo
-            _downloader.DownloadedVideoDeleted += OnDownloadedVideoRemoved;
-
-            _downloader.DownloaderStateChanged += OnDownloaderStateChanged;*/
         }
-
-        /*private void OnDownloaderStateChanged(object? sender, EventArgs e)
-        {
-            DownloaderStateChanged.Invoke(this, EventArgs.Empty);
-        }*/
 
 
         public async Task Load()

@@ -29,7 +29,7 @@
 
         <TextBox Grid.Row="0" Width="600" Height="30" VerticalContentAlignment="Center" Text="{Binding VideoUrl, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsLoadingVideoTemp, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource RoundedTextbox}" />
 
-        <loadingspinnercontrol:LoadingSpinner Grid.Row="1" HorizontalAlignment="Center" Thickness="5" Color="Gray" Diameter="100" IsLoading="{Binding IsLoadingVideoTemp}"/>
+        <loadingspinnercontrol:LoadingSpinner Grid.Row="1" HorizontalAlignment="Center" Thickness="5" Color="Gray" Diameter="80" IsLoading="{Binding IsLoadingVideoTemp}"/>
 
         <Border Grid.Row="1" CornerRadius="5" BorderThickness="1" BorderBrush="{StaticResource SecondaryColor}" MaxWidth="500" MaxHeight="100" VerticalAlignment="Center">
             <Grid>
@@ -150,7 +150,12 @@
 
             </StackPanel>
 
-            <Button Grid.Row="2" Grid.ColumnSpan="3" Width="150" Height="43" Command="{Binding DownloadCommand}" Style="{StaticResource RoundedButtonTheme}">Download</Button>
+            <Button Grid.Row="2" Grid.ColumnSpan="3" Width="150" Height="43" Command="{Binding DownloadCommand}" Style="{StaticResource RoundedButtonTheme}">
+                <Grid>
+                    <TextBlock Visibility="{Binding IsLoadingAddToQueue, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBooleanToVisibilityConverter}}">Download</TextBlock>
+                    <loadingspinnercontrol:LoadingSpinner Thickness="2" Color="{StaticResource PrimaryColorLight}" Diameter="30" IsLoading="True" Visibility="{Binding IsLoadingAddToQueue, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
+            </Button>
         </Grid>
 
         <Grid Grid.Row="3">

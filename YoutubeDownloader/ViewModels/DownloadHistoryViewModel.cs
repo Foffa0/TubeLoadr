@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -30,7 +29,6 @@ namespace YoutubeDownloader.ViewModels
                 OnPropertyChanged(nameof(ErrorMessage));
                 OnPropertyChanged(nameof(HasErrorMessage));
             }
-
         }
 
         public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
@@ -41,8 +39,8 @@ namespace YoutubeDownloader.ViewModels
         public bool IsLoading
         {
             get { return _isLoading; }
-            set 
-            { 
+            set
+            {
                 _isLoading = value;
                 OnPropertyChanged(nameof(IsLoading));
             }
@@ -75,7 +73,7 @@ namespace YoutubeDownloader.ViewModels
 
 
         public override void Dispose()
-        {   
+        {
             _downloaderStore.DownloadedVideoCreated -= OnVideoCreated;
             base.Dispose();
         }

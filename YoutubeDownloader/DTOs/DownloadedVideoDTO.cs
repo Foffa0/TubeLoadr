@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace YoutubeDownloader.DTOs
 {
@@ -19,6 +15,6 @@ namespace YoutubeDownloader.DTOs
         public string Thumbnail { get; set; }
         public string Format { get; set; }
         public string FilePath { get; set; }
-        public string Filename{ get; set; }
+        public string Filename { get; set; }
     }
 }

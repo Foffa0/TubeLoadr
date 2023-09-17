@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using YoutubeDownloader.Stores;
 using YoutubeDownloader.ViewModels;
 
@@ -20,7 +16,7 @@ namespace YoutubeDownloader.Services
             _createViewModel = createViewModel;
         }
 
-        public void Navigate() 
+        public void Navigate()
         {
             _navigationStore.CurrentViewModel = _createViewModel();
         }

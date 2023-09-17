@@ -29,7 +29,7 @@
         </Grid.RowDefinitions>
 
 
-        <TextBlock Grid.Row="0" Text="Downloaded Videos" Style="{StaticResource HeadingTheme}" />
+        <TextBlock Grid.Row="0" Text="Downloaded Videos" Style="{StaticResource HeadingTheme}" VerticalAlignment="Center" />
 
         <Grid Grid.Row="1">
 

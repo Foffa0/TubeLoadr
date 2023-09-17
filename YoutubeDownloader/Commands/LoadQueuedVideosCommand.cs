@@ -1,12 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
-using System.Windows;
-using YoutubeDownloader.Models;
 using YoutubeDownloader.Stores;
 using YoutubeDownloader.ViewModels;
 
@@ -24,14 +17,14 @@ namespace YoutubeDownloader.Commands
         }
 
         public override async Task ExecuteAsync(object parameter)
-        {      
+        {
             _viewModel.ErrorMessage = string.Empty;
             _viewModel.IsLoading = true;
             try
             {
                 await _downloaderStore.Load();
                 _viewModel.UpdateVideos(_downloaderStore.DownloadQueue);
-            
+
             }
             catch (Exception e)
             {

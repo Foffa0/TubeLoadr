@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using YoutubeDownloader.Services.yt_dlp;
 
 namespace YoutubeDownloader.Models
-{   
+{
     /// <summary>
     /// Represents a Video that is in queue.
     /// </summary>
@@ -46,7 +42,7 @@ namespace YoutubeDownloader.Models
         }
 
         public Video(Guid id, string title, string url, int duration, string channel, string thumbnail, string filename, string filePath, string format, int startTime, int endTime, string resolution)
-        {   
+        {
             Id = id;
             Title = title;
             Url = url;
