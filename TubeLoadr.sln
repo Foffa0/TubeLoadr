@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TubeLoadr", "TubeLoadr\TubeLoadr.csproj", "{AD827D64-C4C0-4F2F-9A01-83512CE60B55}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TubeLoadrSetup", "TubeLoadrSetup\TubeLoadrSetup.vdproj", "{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|ARM64 = Debug|ARM64
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|ARM64 = Release|ARM64
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Debug|ARM.Build.0 = Debug|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Debug|x64.ActiveCfg = Debug|x64
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Debug|x64.Build.0 = Debug|x64
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Debug|x86.ActiveCfg = Debug|x86
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Debug|x86.Build.0 = Debug|x86
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Release|ARM.ActiveCfg = Release|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Release|ARM.Build.0 = Release|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Release|ARM64.Build.0 = Release|Any CPU
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Release|x64.ActiveCfg = Release|x64
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Release|x64.Build.0 = Release|x64
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Release|x86.ActiveCfg = Release|x86
+		{AD827D64-C4C0-4F2F-9A01-83512CE60B55}.Release|x86.Build.0 = Release|x86
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Debug|Any CPU.ActiveCfg = Debug
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Debug|ARM.ActiveCfg = Debug
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Debug|ARM64.ActiveCfg = Debug
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Debug|x64.ActiveCfg = Debug
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Debug|x86.ActiveCfg = Debug
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Release|Any CPU.ActiveCfg = Release
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Release|ARM.ActiveCfg = Release
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Release|ARM64.ActiveCfg = Release
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Release|x64.ActiveCfg = Release
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Release|x86.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {43DBE6FC-464A-4D36-9D65-C8A400E2CA25}
+	EndGlobalSection
+EndGlobal
