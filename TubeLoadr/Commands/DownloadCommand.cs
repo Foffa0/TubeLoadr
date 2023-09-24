@@ -11,7 +11,6 @@ namespace TubeLoadr.Commands
         private readonly Downloader _downloader;
         private readonly DownloadViewModel _downloadViewModel;
         private UserSettings _userSettings;
-        //private readonly Configuration AppConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoaming);
         public DownloadCommand(Downloader downloader, DownloadViewModel downloadViewModel)
         {
             _downloader = downloader;
@@ -32,12 +31,6 @@ namespace TubeLoadr.Commands
             /*try
             {*/
             _downloadViewModel.IsLoadingAddToQueue = true;
-            /*if (!AppConfig.AppSettings.Settings["downloadDirectory"].Value.Equals(_downloadViewModel.OutputDir))
-            {
-                AppConfig.AppSettings.Settings["downloadDirectory"].Value = _downloadViewModel.OutputDir;
-                AppConfig.Save(ConfigurationSaveMode.Modified);
-                ConfigurationManager.RefreshSection(AppConfig.AppSettings.SectionInformation.Name);
-            }*/
 
             string downloadDir = _userSettings.GetSetting("downloadDirectory");
             if (!downloadDir.Equals(_downloadViewModel.OutputDir))
