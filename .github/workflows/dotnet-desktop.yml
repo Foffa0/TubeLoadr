@@ -95,4 +95,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Vdproj Package
-        path: TubeLoadr\bin\release\net7.0-windows\win-x64\publish\win-x64
+        path: TubeLoadrSetup\Release
