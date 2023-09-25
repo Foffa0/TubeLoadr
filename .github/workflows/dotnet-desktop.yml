@@ -79,15 +79,15 @@ jobs:
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Debug
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release
       env:
-        Configuration: Debug
+        Configuration: Release
 
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Setup VS Dev Environment
       uses: seanmiddleditch/gha-setup-vsdevenv@v4
     - name: Build installer
-      run: devenv.com ${{github.workspace}}\$env:Vdproj_Project_Directory\$env:Vdproj_Project_Path /build "Debug|Any CPU"
+      run: devenv.com ${{github.workspace}}\$env:Vdproj_Project_Directory\$env:Vdproj_Project_Path /build "Release|Any CPU"
 
 
     # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
@@ -95,4 +95,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Vdproj Package
-        path: ${{ env.Vdproj_Project_Directory }}\Debug
+        path: bin\release\net7.0-windows\win-x64\publish\win-x64
