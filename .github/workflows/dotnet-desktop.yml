@@ -87,7 +87,7 @@ jobs:
     - name: Setup VS Dev Environment
       uses: seanmiddleditch/gha-setup-vsdevenv@v4
     - name: Build installer
-      run: devenv.com ${{github.workspace}}\$env:Vdproj_Project_Directory\$env:Vdproj_Project_Path /build "Release|Any CPU"
+      run: devenv.com ${{github.workspace}}\$env:Vdproj_Project_Directory\$env:Vdproj_Project_Path /build "Release|x64"
 
 
     # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
