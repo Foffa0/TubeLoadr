@@ -76,14 +76,6 @@ jobs:
     - name: Setup Nuget
       uses: Nuget/setup-nuget@v1.0.5
 
-    - name: Restore nuget packages
-      run: nuget restore TubeLoadr.sln
-
-    - name: Set VS.net environment
-      run: cmd.exe /C CALL "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
-    - name: Build VSTO
-      run: msbuild ${{github.workspace}}\TubeLoadr.sln -t:rebuild /p:Platform="x64" /p:Configuration="Release" /nologo /nr:false /p:VisualStudioVersion="17.0"
-
     - name: DisableOutOfProc Fix
       run: |
         function Invoke-DisableOutOfProcBuild {
@@ -101,6 +93,14 @@ jobs:
           return;
         }
         Invoke-DisableOutOfProcBuild
+
+    - name: Restore nuget packages
+      run: nuget restore TubeLoadr.sln
+
+    - name: Set VS.net environment
+      run: cmd.exe /C CALL "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+    - name: Build VSTO
+      run: msbuild ${{github.workspace}}\TubeLoadr.sln -t:rebuild /p:Platform="x64" /p:Configuration="Release" /nologo /nr:false /p:VisualStudioVersion="17.0"
 
     # Test
     - name: Execute Unit Tests
