@@ -93,9 +93,9 @@ jobs:
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release|x64
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release x64
       env:
-        Configuration: Release|x64
+        Configuration: Release x64
 
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Setup VS Dev Environment
