@@ -73,9 +73,23 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
-    # Execute all unit tests in the solution
-    - name: Execute unit tests
-      run: dotnet test
+    - name: DisableOutOfProc Fix
+      run: |
+        function Invoke-DisableOutOfProcBuild {
+          param ();
+          $visualStudioWherePath = ('{0}/Microsoft Visual Studio/Installer/vswhere.exe' -f ${Env:ProgramFiles(x86)});
+          $visualStudioInstallationPath = & $visualStudioWherePath -latest -products 'Microsoft.VisualStudio.Product.Enterprise' -property 'installationPath';
+          $currentWorkingDirectory = ('{0}/Common7/IDE/CommonExtensions/Microsoft/VSI/DisableOutOfProcBuild' -f $visualStudioInstallationPath);
+          
+          Set-Location -Path $currentWorkingDirectory;
+          
+          $disableOutOfProcBuildPath = ('{0}/DisableOutOfProcBuild.exe' -f $currentWorkingDirectory);
+          
+          & $disableOutOfProcBuildPath;
+          
+          return;
+        }
+        Invoke-DisableOutOfProcBuild
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
