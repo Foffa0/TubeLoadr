@@ -93,6 +93,8 @@ jobs:
 
     - name: Setup Nuget
       uses: Nuget/setup-nuget@v1.0.5
+      with:
+        nuget-version: 'preview'
 
     - name: Restore nuget packages
       run: nuget restore TubeLoadr.sln
