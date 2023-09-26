@@ -50,6 +50,7 @@ Global
 		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Release|ARM.ActiveCfg = Release
 		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Release|ARM64.ActiveCfg = Release
 		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Release|x64.ActiveCfg = Release
+		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Release|x64.Build.0 = Release
 		{BE5CD326-23DB-49C1-8F5F-DAE44F1E737B}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
