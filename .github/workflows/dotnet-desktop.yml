@@ -92,7 +92,7 @@ jobs:
         Invoke-DisableOutOfProcBuild
 
     - name: Restore nuget packages
-      run: msbuild –t:restore
+      run: msbuild TubeLoadr.sln –t:restore
 
     - name: Set VS.net environment
       run: cmd.exe /C CALL "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
