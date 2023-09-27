@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="darkLogo.png" />
+    <None Remove="logo.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +48,11 @@
     <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageReference Include="YoutubeDLSharp" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="darkLogo.png" />
+    <Resource Include="logo.ico" />
   </ItemGroup>
 
   <ItemGroup>
