@@ -42,7 +42,6 @@ namespace TubeLoadr
                 if (FocusManager.GetFocusedElement(this).GetType() == textBox.GetType())
                 {
                     Keyboard.ClearFocus();
-                    //FocusManager.SetFocusedElement(this, textBox);
                 }
             }
         }
