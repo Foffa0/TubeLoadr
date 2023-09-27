@@ -17,7 +17,7 @@
         <Image Source="/logo.ico" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Height="80" />
         <TextBlock Text="TubeLoadr" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" FontSize="35" FontFamily="/Resources/Fonts/#Poppins"  Margin="55,0,0,0"/>
         <TextBlock Grid.Row="1" Foreground="DarkGray" FontSize="20" FontFamily="/Resources/Fonts/#Poppins" Margin="20 0">
-            <Hyperlink NavigateUri="https://github.com/Foffa0/TubeLoadr/releases" Foreground="DarkGray" RequestNavigate="Hyperlink_RequestNavigate">v0.9.2</Hyperlink>
+            <Hyperlink NavigateUri="https://github.com/Foffa0/TubeLoadr/releases" Foreground="DarkGray" RequestNavigate="Hyperlink_RequestNavigate">v0.9.3</Hyperlink>
         </TextBlock>
         <StackPanel Orientation="Vertical" Grid.Row="2">
             <TextBlock Foreground="White" FontSize="20" FontFamily="/Resources/Fonts/#Poppins">
