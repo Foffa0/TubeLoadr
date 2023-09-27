@@ -6,8 +6,35 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Grid>
-        <TextBlock Text="About Page" />
-
+    <Grid Margin="100 0" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        
+        <Image Source="/logo.ico" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Height="80" />
+        <TextBlock Text="TubeLoadr" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" FontSize="35" FontFamily="/Resources/Fonts/#Poppins"  Margin="55,0,0,0"/>
+        <TextBlock Grid.Row="1" Foreground="DarkGray" FontSize="20" FontFamily="/Resources/Fonts/#Poppins" Margin="20 0">
+            <Hyperlink NavigateUri="https://github.com/Foffa0/TubeLoadr/releases" Foreground="DarkGray" RequestNavigate="Hyperlink_RequestNavigate">v0.9.2</Hyperlink>
+        </TextBlock>
+        <StackPanel Orientation="Vertical" Grid.Row="2">
+            <TextBlock Foreground="White" FontSize="20" FontFamily="/Resources/Fonts/#Poppins">
+                Copyright (c) 2023 TubeLoadr and its contributors
+            </TextBlock>
+            <TextBlock Foreground="White" FontSize="20" FontFamily="/Resources/Fonts/#Poppins">
+                Licensed under Apache-2.0 license
+            </TextBlock>
+            <TextBlock Foreground="White" FontSize="20" FontFamily="/Resources/Fonts/#Poppins" Margin="0,15,0,0" TextWrapping="Wrap">
+                All publisher associated logos are the intellectual property of their respective owners. Media content included is licensed under the terms set by the publisher,
+            </TextBlock>
+        </StackPanel>
+        <Button Grid.Row="3" Background="Black" BorderThickness="0" Width="300" Command="{Binding OpenGitHub}" Margin="020">
+            <StackPanel Orientation="Horizontal" Margin="3">
+                <Image Source="/Views/github-mark-white.png" Height="30" Margin=" 0,0,15,0" />
+                <TextBlock Foreground="White" FontSize="18" Text="View project on GitHub" VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
     </Grid>
 </UserControl>

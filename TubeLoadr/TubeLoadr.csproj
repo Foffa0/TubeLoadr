@@ -18,6 +18,7 @@
     <None Remove="appsettings.json" />
     <None Remove="darkLogo.png" />
     <None Remove="logo.ico" />
+    <None Remove="Views\github-mark-white.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,6 +54,7 @@
   <ItemGroup>
     <Resource Include="darkLogo.png" />
     <Resource Include="logo.ico" />
+    <Resource Include="Views\github-mark-white.png" />
   </ItemGroup>
 
   <ItemGroup>
