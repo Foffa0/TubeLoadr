@@ -56,7 +56,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Download Settings" FontSize="18" FontWeight="Regular" Margin="0,0,0,30" Style="{StaticResource LabelTextBlockTheme}"/>
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Download Settings" FontSize="20" Height="30" FontWeight="Regular" Margin="0,0,0,20" Style="{StaticResource LabelTextBlockTheme}"/>
             <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Right" IsEnabled="{Binding VideoTemp, Converter={StaticResource NullToIsEnabledConverter}}" Width="400" Margin="0,0,20,0">
 
                 <TextBlock Text="Output Directory" Style="{StaticResource LabelTextBlockTheme}"/>
@@ -165,7 +165,7 @@
             </Grid.RowDefinitions>
 
             <DockPanel Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,0,0,10">
-                <TextBlock Grid.Row="0" Text="Download queue" Style="{StaticResource HeadingTheme}" Margin="5 0" FontSize="20" Height="25" />
+                <TextBlock Grid.Row="0" Text="Download queue" Style="{StaticResource LabelTextBlockTheme}" FontWeight="Regular" Margin="5 0" FontSize="20" Height="25" />
                 <Button Style="{StaticResource SmallRoundedButtonTheme}" Width="120" Height="30" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" Command="{Binding StartStopDownloadCommand}">
                     <Grid>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Visibility="{Binding IsDownloading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
