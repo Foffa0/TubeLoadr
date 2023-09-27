@@ -105,7 +105,7 @@ jobs:
         $productVersionPattern  = '\"ProductVersion\" = \"8\:[0-9]+(\.([0-9]+)){1,3}\"'
         $productCode            = '"ProductCode" = "8:{' + [guid]::NewGuid().ToString().ToUpper() + '}"'
         $packageCode            = '"PackageCode" = "8:{' + [guid]::NewGuid().ToString().ToUpper() + '}"'
-        $productVersion         = '"ProductVersion" = "8:' + ${{ steps.nbgv.outputs.SimpleVersion }}.ToString(3) + '"'
+        $productVersion         = '"ProductVersion" = "8:' + (${{ steps.nbgv.outputs.SimpleVersion }}).ToString(3) + '"'
 
         (Get-Content .\$env:Filename) | ForEach-Object {
             % {$_ -replace $productCodePattern, $productCode } |
