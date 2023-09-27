@@ -112,7 +112,7 @@ jobs:
             % {$_ -replace $productVersionPattern, $productVersion }
         } | Set-Content $env:Filename
       env:
-        Filename: $env:Vdproj_Project_Directory\$env:Vdproj_Project_Path
+        Filename: ${{$env:Vdproj_Project_Directory}}\${{$env:Vdproj_Project_Path}}
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
