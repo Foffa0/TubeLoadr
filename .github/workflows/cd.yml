@@ -92,26 +92,6 @@ jobs:
         }
         Invoke-DisableOutOfProcBuild
 
-    # Use Nerdbank.GitVersioning to set version variables: https://github.com/AArnott/nbgv
-    - name: Use Nerdbank.GitVersioning to set version variables
-      uses: dotnet/nbgv@master
-      id: nbgv
-    
-    - name: Update Version
-      run: |
-        $productCodePattern     = '\"ProductCode\" = \"8\:{([\d\w-]+)}\"'
-        $packageCodePattern     = '\"PackageCode\" = \"8\:{([\d\w-]+)}\"'
-        $productVersionPattern  = '\"ProductVersion\" = \"8\:[0-9]+(\.([0-9]+)){1,3}\"'
-        $productCode            = '"ProductCode" = "8:{' + [guid]::NewGuid().ToString().ToUpper() + '}"'
-        $packageCode            = '"PackageCode" = "8:{' + [guid]::NewGuid().ToString().ToUpper() + '}"'
-        $productVersion         = '"ProductVersion" = "8:' + ${{ steps.nbgv.outputs.SimpleVersion }} + '"'
-
-        (Get-Content .\$env:Vdproj_Project_Directory\$env:Vdproj_Project_Path) | ForEach-Object {
-            % {$_ -replace $productCodePattern, $productCode } |
-            % {$_ -replace $packageCodePattern, $packageCode } |
-            % {$_ -replace $productVersionPattern, $productVersion }
-        } | Set-Content $env:Vdproj_Project_Directory\$env:Vdproj_Project_Path
-
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test
