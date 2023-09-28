@@ -106,7 +106,7 @@ jobs:
         $packageCode            = '"PackageCode" = "8:{' + [guid]::NewGuid().ToString().ToUpper() + '}"'
         $productVersion         = '"ProductVersion" = "8:' + ${{ steps.nbgv.outputs.SimpleVersion }} + '"'
 
-        (Get-Content .\$env:Filename) | ForEach-Object {
+        (Get-Content .\$env:Vdproj_Project_Directory\$env:Vdproj_Project_Path) | ForEach-Object {
             % {$_ -replace $productCodePattern, $productCode } |
             % {$_ -replace $packageCodePattern, $packageCode } |
             % {$_ -replace $productVersionPattern, $productVersion }
