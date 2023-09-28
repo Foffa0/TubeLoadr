@@ -30,7 +30,7 @@ namespace TubeLoadr
             _host = Host.CreateDefaultBuilder()
                 .UseSerilog((host, loggerConfiguration) =>
                 {
-                    loggerConfiguration.WriteTo.File($"{DataStorage.UserDataFolder}Logger.txt", rollingInterval: RollingInterval.Day)
+                    loggerConfiguration.WriteTo.File($"{DataStorage.UserDataFolder}\\Logs\\Logger.txt", rollingInterval: RollingInterval.Day)
                         .MinimumLevel.Debug()
                         .Enrich.WithExceptionDetails()
                         .Enrich.FromLogContext();
