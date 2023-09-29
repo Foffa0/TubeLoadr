@@ -111,9 +111,9 @@ jobs:
     - name: Setup VS Dev Environment
       uses: seanmiddleditch/gha-setup-vsdevenv@v4
     - name: Build Project
-      run: devenv.com ${{github.workspace}}\TubeLoadr\TubeLoadr. /build "Release|x64"
+      run: devenv.com ${{github.workspace}}\TubeLoadr\TubeLoadr.csproj /build "Release|x64"
     - name: Build installer
-      run: devenv.com ${{github.workspace}}\$env:Vdproj_Project_Directory\TubeLoadr.csproj /build "Release|x64"
+      run: devenv.com ${{github.workspace}}\$env:Vdproj_Project_Directory\$env:Vdproj_Project_Path /build "Release|x64"
 
     # Archive the package
     - name: Create archive
