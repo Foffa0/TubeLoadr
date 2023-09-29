@@ -124,7 +124,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        tag_name: ${{ steps.nbgv.outputs.Version }}
+        tag_name: v${{ steps.nbgv.outputs.Version }}
         release_name:  TubeLoadrSetup win-64
         draft: false
         prerelease: false
