@@ -1,7 +1,7 @@
 <br/>
 <p align="center">
   <a href="https://github.com/Foffa0/TubeLoadr">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="images/Logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">TubeLoadr</h3>
@@ -34,7 +34,7 @@
 
 ## About The Project
 
-![Screen Shot](images/screenshot.png)
+![Screen Shot](images/screenshot.jpg)
 
 There are many youtube downloaders that allow yout to download videos. But most of them are not free, have download speed limitations or are simply not trustworthy.
 That's why I decided to build my own downloader.
