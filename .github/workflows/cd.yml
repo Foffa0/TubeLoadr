@@ -102,16 +102,18 @@ jobs:
       run: dotnet test
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
-    #- name: Restore the application
-    #  run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-    #  env:
-    #    Configuration: Release
+    - name: Restore the application
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      env:
+        Configuration: Release
 
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Setup VS Dev Environment
       uses: seanmiddleditch/gha-setup-vsdevenv@v4
+    - name: Build Project
+      run: devenv.com ${{github.workspace}}\TubeLoadr\TubeLoadr. /build "Release|x64"
     - name: Build installer
-      run: devenv.com ${{github.workspace}}\$env:Vdproj_Project_Directory\$env:Vdproj_Project_Path /build "Release|x64"
+      run: devenv.com ${{github.workspace}}\$env:Vdproj_Project_Directory\TubeLoadr.csproj /build "Release|x64"
 
     # Archive the package
     - name: Create archive
@@ -124,7 +126,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        tag_name: v${{ steps.nbgv.outputs.Version }}
+        tag_name: v${{ steps.nbgv.outputs.simpleVersion }}
         release_name:  TubeLoadrSetup win-64
         draft: false
         prerelease: false
