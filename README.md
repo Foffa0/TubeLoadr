@@ -28,14 +28,9 @@
 * [About the Project](#about-the-project)
 * [Built With](#built-with)
 * [Getting Started](#getting-started)
-  * [Prerequisites](#prerequisites)
   * [Installation](#installation)
-* [Usage](#usage)
 * [Roadmap](#roadmap)
-* [Contributing](#contributing)
 * [License](#license)
-* [Authors](#authors)
-* [Acknowledgements](#acknowledgements)
 
 ## About The Project
 
@@ -58,3 +53,23 @@ For downloading and converting videos this project is based on
 
 * [Yt-dlp](https://github.com/yt-dlp/yt-dlp)
 * [FFmpeg](https://ffmpeg.org/)
+
+## Getting Started
+
+To get a local copy up and running follow these simple example steps.
+
+### Installation
+
+1. Download the latest [release](https://github.com/Foffa0/TubeLoadr/releases) and unpack it.
+
+2. Run the included installer and follow the steps to install TubeLoadr on your machine. 
+
+3. After installation the app is ready.
+
+## Roadmap
+
+See the [open issues](https://github.com/Foffa0/TubeLoadr/issues) for a list of proposed features (and known issues).
+
+## License
+
+Distributed under the Apache License 2.0. See [LICENSE](https://github.com/Foffa0/TubeLoadr/blob/master/LICENSE) for more information.
