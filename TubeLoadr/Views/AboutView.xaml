@@ -30,7 +30,7 @@
                 Licensed under Apache-2.0 license
             </TextBlock>
             <TextBlock Foreground="White" FontSize="20" FontFamily="/Resources/Fonts/#Poppins" Margin="0,15,0,0" TextWrapping="Wrap">
-                All publisher associated logos are the intellectual property of their respective owners. Media content included is licensed under the terms set by the publisher,
+                All publisher associated logos are the intellectual property of their respective owners. Media content included is licensed under the terms set by the publisher.
             </TextBlock>
         </StackPanel>
         <Button Grid.Row="3" Background="Black" BorderThickness="0" Width="300" Command="{Binding OpenGitHub}" Margin="020">
