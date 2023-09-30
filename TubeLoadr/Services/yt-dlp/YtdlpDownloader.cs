@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,6 +46,20 @@ namespace TubeLoadr.Services.yt_dlp
         {
             _logger = logger;
             ytdl = new YoutubeDL();
+
+            if (!File.Exists(dir + @"\Downloadtools\yt-dlp.exe"))
+            {
+                throw new ToolNotFoundException("The file Downloadtools/yt-dlp.exe was not found. Please check the installation.");
+            }
+            else if (!File.Exists(dir + @"\Downloadtools\ffmpeg.exe"))
+            {
+                throw new ToolNotFoundException("The file Downloadtools/ffmpeg.exe was not found. Please check the installation.");
+            }
+            else if (!File.Exists(dir + @"\Downloadtools\ffprobe.exe"))
+            {
+                throw new ToolNotFoundException("The file Downloadtools/ffprobe.exe was not found. Please check the installation.");
+            }
+
             ytdl.YoutubeDLPath = dir + @"\Downloadtools\yt-dlp.exe";
             ytdl.FFmpegPath = dir + @"\Downloadtools\ffmpeg.exe";
 
