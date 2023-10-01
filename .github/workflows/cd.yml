@@ -60,7 +60,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -110,8 +110,6 @@ jobs:
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Setup VS Dev Environment
       uses: seanmiddleditch/gha-setup-vsdevenv@v4
-    - name: Build Project
-      run: devenv.com ${{github.workspace}}\TubeLoadr\TubeLoadr.csproj /build "Release|x64"
     - name: Build installer
       run: devenv.com ${{github.workspace}}\$env:Vdproj_Project_Directory\$env:Vdproj_Project_Path /build "Release|x64"
 
