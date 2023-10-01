@@ -84,11 +84,8 @@ namespace TubeLoadr.Services.yt_dlp
             // get some video information
             VideoData video = res.Data;
 
-            if (video == null) throw new VideoNotFoundException("Youtube video not found");
+            if (video == null || video.Title == "recommended") throw new VideoNotFoundException("Youtube video not found");
 
-            string title = video.Title;
-            string uploader = video.Uploader;
-            long? views = video.ViewCount;
             // all available download formats
             FormatData[] formats = video.Formats;
 
