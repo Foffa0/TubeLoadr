@@ -10,6 +10,7 @@ using System.Windows;
 using TubeLoadr.DbContexts;
 using TubeLoadr.Models;
 using TubeLoadr.Services;
+using TubeLoadr.Services.GitHub;
 using TubeLoadr.Services.VideoCreators;
 using TubeLoadr.Services.VideoProviders;
 using TubeLoadr.Services.yt_dlp;
@@ -60,7 +61,7 @@ namespace TubeLoadr
                     services.AddSingleton<Func<AboutViewModel>>((s) => () => s.GetRequiredService<AboutViewModel>());
                     services.AddSingleton<NavigationService<AboutViewModel>>();
 
-                    // services.AddSingleton<DownloadCommand>();
+                    services.AddSingleton<UpdateService>();
 
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton(s => new MainWindow()

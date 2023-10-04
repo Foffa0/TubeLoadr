@@ -33,7 +33,7 @@
                 All publisher associated logos are the intellectual property of their respective owners. Media content included is licensed under the terms set by the publisher.
             </TextBlock>
         </StackPanel>
-        <Button Grid.Row="3" Background="Black" BorderThickness="0" Width="300" Command="{Binding OpenGitHub}" Margin="020">
+        <Button Grid.Row="3" Background="Black" BorderThickness="0" Width="300" Command="{Binding OpenBrowserCommand}" CommandParameter="https://github.com/Foffa0/TubeLoadr" Margin="020">
             <StackPanel Orientation="Horizontal" Margin="3">
                 <Image Source="/Views/github-mark-white.png" Height="30" Margin=" 0,0,15,0" />
                 <TextBlock Foreground="White" FontSize="18" Text="View project on GitHub" VerticalAlignment="Center" />

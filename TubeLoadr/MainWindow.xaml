@@ -8,7 +8,9 @@
         FontFamily="/Resources/Fonts/#Poppins"
         MinHeight="300"
         MinWidth="500">
-
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
 
 
     <WindowChrome.WindowChrome>
@@ -36,49 +38,62 @@
                 </Style.Triggers>
             </Style>
         </Border.Style>
-    
-    
-    <Grid Background="{StaticResource WindowThemeDark}" MouseDown="MouseDown_RemoveFocus">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="25" />
-            <RowDefinition Height="75" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <Grid.Resources>
 
-        </Grid.Resources>
+        <Grid Background="{StaticResource WindowThemeDark}" MouseDown="MouseDown_RemoveFocus">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
 
-        <Border Grid.ColumnSpan="2">
-            <Grid HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25" />
+                <RowDefinition Height="75" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.Resources>
+
+            </Grid.Resources>
+
+            <Border Grid.ColumnSpan="2">
+                <Grid HorizontalAlignment="Stretch">
                     <Image Source="/darkLogo.png" HorizontalAlignment="Left" Height="18" Margin="10 0 0 0" />
                     <Label Content="TubeLoadr" Foreground="Gray" FontWeight="SemiBold" Margin="30 0 0 0" />
 
-                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Stretch" Orientation="Horizontal">
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" x:Name="minimizeBtn" Width="50" VerticalAlignment="Stretch" Content="🗕" Padding="0,0,0,5" Style="{StaticResource TitleBarButtonTheme}" Click="Button_Minimize_Click"/>
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Width="50" Content="☐" Style="{StaticResource TitleBarButtonTheme}" Click="WindowStateButton_Click" />
-                    <Button WindowChrome.IsHitTestVisibleInChrome="True" Width="50" Content="✕" Style="{StaticResource TitleBarButtonTheme}" Click="CloseButton_Click" />
-                </StackPanel>
-            </Grid>
-        </Border>
+                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Stretch" Orientation="Horizontal">
+                        <Button WindowChrome.IsHitTestVisibleInChrome="True" x:Name="minimizeBtn" Width="50" VerticalAlignment="Stretch" Content="🗕" Padding="0,0,0,5" Style="{StaticResource TitleBarButtonTheme}" Click="Button_Minimize_Click"/>
+                        <Button WindowChrome.IsHitTestVisibleInChrome="True" Width="50" Content="☐" Style="{StaticResource TitleBarButtonTheme}" Click="WindowStateButton_Click" />
+                        <Button WindowChrome.IsHitTestVisibleInChrome="True" Width="50" Content="✕" Style="{StaticResource TitleBarButtonTheme}" Click="CloseButton_Click" />
+                    </StackPanel>
+                </Grid>
+            </Border>
 
 
             <Image Source="/logo.ico" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Height="45" Margin="20,0,0,0" />
             <TextBlock Text="TubeLoadr" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" FontSize="22" FontFamily="/Resources/Fonts/#Poppins"  Margin="50,0,0,0"/>
 
-            <StackPanel Grid.Row="2" Grid.Column="0">
-            <RadioButton Content="Download" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MenuButtonTheme}" Command="{Binding DownloadCommand}" IsChecked="True"/>
-            <RadioButton Content="History" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MenuButtonTheme}" Command="{Binding DownloadHistoryCommand}"/>
-            <RadioButton Content="About" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MenuButtonTheme}" Command="{Binding AboutCommand}"/>
-        </StackPanel>
+            <Grid Grid.Row="2" Grid.Column="0" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Vertical">
+                    <RadioButton Content="Download" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MenuButtonTheme}" Command="{Binding DownloadCommand}" IsChecked="True"/>
+                    <RadioButton Content="History" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MenuButtonTheme}" Command="{Binding DownloadHistoryCommand}"/>
+                    <RadioButton Content="About" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MenuButtonTheme}" Command="{Binding AboutCommand}"/>
+                </StackPanel>
+                <Button Grid.Row="1" VerticalAlignment="Bottom" Margin="0 30" Content="Never Version available! 🔗" Width="150" Height="30" FontSize="10" FontWeight="Medium"  Foreground="White" Background="LightGreen" BorderThickness="0" Visibility="{Binding NewerVersionAvailable, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding OpenBrowserCommand}" CommandParameter="https://github.com/Foffa0/TubeLoadr/releases/latest">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
 
-        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Background="{StaticResource WindowTheme}">
-            <ContentControl  Content="{Binding CurrentViewModel}" Margin="10" />
-        </Border>
-    </Grid>
+            <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Background="{StaticResource WindowTheme}">
+                <ContentControl  Content="{Binding CurrentViewModel}" Margin="10" />
+            </Border>
+        </Grid>
     </Border>
 </Window>
