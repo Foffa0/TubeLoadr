@@ -1,5 +1,8 @@
 ﻿namespace TubeLoadr.Models
 {
+    /// <summary>
+    /// Contains the user's download settings for a video.
+    /// </summary>
     public class DownloadOptions
     {
         public string Filename;
