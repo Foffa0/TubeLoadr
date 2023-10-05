@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using TubeLoadr.Exceptions;
 using TubeLoadr.Services.yt_dlp;
 using TubeLoadr.Stores;
 
@@ -22,7 +23,17 @@ namespace TubeLoadr.Models
         {
             _downloaderStore = downloaderStore;
 
-            _ytdlpDownloader = new YtdlpDownloader(logger);
+            try
+            {
+                _ytdlpDownloader = new YtdlpDownloader(logger);
+            }
+            catch (ToolNotFoundException e)
+            {
+                MessageBox.Show(e.Message,
+                                          "Component not found!",
+                                          MessageBoxButton.OK,
+                                          MessageBoxImage.Warning);
+            }
 
             _downloaderState = YtdlpDownloader.DownloaderState.Ready;
             _downloaderStore.DownloaderState = _downloaderState;
