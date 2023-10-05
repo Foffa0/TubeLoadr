@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using TubeLoadr.Commands;
 using TubeLoadr.Services;
@@ -12,6 +13,19 @@ namespace TubeLoadr.ViewModels
         private readonly NavigationStore _navigationStore;
 
         private readonly UpdateService _updateService;
+
+        private string _windowStateSymbol;
+
+        public string WindowStateSymbol
+        {
+            get { return _windowStateSymbol; }
+            set
+            {
+                _windowStateSymbol = value;
+                OnPropertyChanged(nameof(WindowStateSymbol));
+            }
+        }
+
 
         public ICommand DownloadCommand { get; }
         public ICommand DownloadHistoryCommand { get; }
@@ -48,6 +62,8 @@ namespace TubeLoadr.ViewModels
             UpdateCheckCommand = new UpdateCheckCommand(_updateService);
             OpenBrowserCommand = new OpenBrowserCommand();
 
+            Application.Current.MainWindow.StateChanged += WindowStateChanged;
+
             NewerVersionAvailable = false;
 
             UpdateCheckCommand.Execute(this);
@@ -61,6 +77,18 @@ namespace TubeLoadr.ViewModels
         private void OnUpdateAvailable(object? sender, EventArgs e)
         {
             NewerVersionAvailable = _updateService.IsNeverVersionAvailable;
+        }
+
+        private void WindowStateChanged(object? sender, EventArgs e)
+        {
+            if (Application.Current.MainWindow.WindowState != WindowState.Maximized)
+            {
+                WindowStateSymbol = "🗗";
+            }
+            else
+            {
+                WindowStateSymbol = "☐";
+            }
         }
 
     }

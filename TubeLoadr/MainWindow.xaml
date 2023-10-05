@@ -61,8 +61,8 @@
                     <Label Content="TubeLoadr" Foreground="Gray" FontWeight="SemiBold" Margin="30 0 0 0" />
 
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Stretch" Orientation="Horizontal">
-                        <Button WindowChrome.IsHitTestVisibleInChrome="True" x:Name="minimizeBtn" Width="50" VerticalAlignment="Stretch" Content="🗕" Padding="0,0,0,5" Style="{StaticResource TitleBarButtonTheme}" Click="Button_Minimize_Click"/>
-                        <Button WindowChrome.IsHitTestVisibleInChrome="True" Width="50" Content="☐" Style="{StaticResource TitleBarButtonTheme}" Click="WindowStateButton_Click" />
+                        <Button WindowChrome.IsHitTestVisibleInChrome="True" x:Name="minimizeBtn" Width="50" VerticalAlignment="Stretch" Content="⏤" Padding="0,0,0,5" Style="{StaticResource TitleBarButtonTheme}" Click="Button_Minimize_Click"/>
+                        <Button WindowChrome.IsHitTestVisibleInChrome="True" Width="50" Content="{Binding WindowStateSymbol}" Style="{StaticResource TitleBarButtonTheme}" Click="WindowStateButton_Click" />
                         <Button WindowChrome.IsHitTestVisibleInChrome="True" Width="50" Content="✕" Style="{StaticResource TitleBarButtonTheme}" Click="CloseButton_Click" />
                     </StackPanel>
                 </Grid>
