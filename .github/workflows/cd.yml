@@ -103,6 +103,9 @@ jobs:
 
     - name: install yt-dlp
       run: winget install yt-dlp --location "TubeLoadr\Downloadtools" --accept-package-agreements --accept-source-agreements
+
+    - name: install ffmpeg
+      run: winget install ffmpeg --location "TubeLoadr\Downloadtools" --accept-package-agreements --accept-source-agreements
       
     # Execute all unit tests in the solution
     - name: Execute unit tests
