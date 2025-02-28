@@ -61,7 +61,6 @@ namespace TubeLoadr.Services.yt_dlp
             }
 
             ytdl.YoutubeDLPath = dir + @"\Downloadtools\yt-dlp.exe";
-            ytdl.RunUpdate();
             ytdl.FFmpegPath = dir + @"\Downloadtools\ffmpeg.exe";
 
             cts = new CancellationTokenSource();
