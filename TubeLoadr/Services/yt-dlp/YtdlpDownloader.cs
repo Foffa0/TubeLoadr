@@ -61,6 +61,7 @@ namespace TubeLoadr.Services.yt_dlp
             }
 
             ytdl.YoutubeDLPath = dir + @"\Downloadtools\yt-dlp.exe";
+            ytdl.RunUpdate();
             ytdl.FFmpegPath = dir + @"\Downloadtools\ffmpeg.exe";
 
             cts = new CancellationTokenSource();
@@ -79,11 +80,11 @@ namespace TubeLoadr.Services.yt_dlp
         {
             var res = await ytdl.RunVideoDataFetch(url);
 
-            if (res.ErrorOutput != null || res.ErrorOutput.Any())
-            {
-                Debug.WriteLine("------------------------------------------------------------------");
-                for (int i = 0; i < res.ErrorOutput.Length; i++) Debug.WriteLine($"Error output: {res.ErrorOutput[i]}");
-            }
+            //if (res.ErrorOutput != null || res.ErrorOutput.Any())
+            //{
+            //    Debug.WriteLine("------------------------------------------------------------------");
+            //    for (int i = 0; i < res.ErrorOutput.Length; i++) Debug.WriteLine($"Error output: {res.ErrorOutput[i]}");
+            //}
 
             if (!res.Success)
             {
@@ -139,11 +140,11 @@ namespace TubeLoadr.Services.yt_dlp
 
             var res = await ytdl.RunVideoDataFetch(url);
 
-            if (res.ErrorOutput != null || res.ErrorOutput.Any())
-            {
-                Debug.WriteLine("------------------------------------------------------------------");
-                Debug.WriteLine($"Error output: {res.ErrorOutput[0]}");
-            }
+            //if (res.ErrorOutput != null || res.ErrorOutput.Any())
+            //{
+            //    Debug.WriteLine("------------------------------------------------------------------");
+            //    Debug.WriteLine($"Error output: {res.ErrorOutput[0]}");
+            //}
 
             if (!res.Success)
             {
@@ -260,8 +261,8 @@ namespace TubeLoadr.Services.yt_dlp
 
                 TimeSpan end = TimeSpan.FromSeconds(video.EndTime);
 
-                Debug.WriteLine(start.ToString("hh':'mm':'ss"));
-                Debug.WriteLine(end.ToString("hh':'mm':'ss"));
+                //Debug.WriteLine(start.ToString("hh':'mm':'ss"));
+                //Debug.WriteLine(end.ToString("hh':'mm':'ss"));
 
                 options.PostprocessorArgs = new[]
                 {
@@ -287,11 +288,11 @@ namespace TubeLoadr.Services.yt_dlp
 
             if (res.ErrorOutput != null || res.ErrorOutput.Any())
             {
-                Debug.WriteLine("-----------------hhhhhhhhhhh-------------------------------------------------");
-                for (int i = 0; i < res.ErrorOutput.Length; i++)
-                {
-                    Debug.WriteLine($"Error output: {res.ErrorOutput[i]}");
-                }
+                //Debug.WriteLine("-----------------hhhhhhhhhhh-------------------------------------------------");
+                //for (int i = 0; i < res.ErrorOutput.Length; i++)
+                //{
+                //    Debug.WriteLine($"Error output: {res.ErrorOutput[i]}");
+                //}
             }
 
             if (!res.Success)

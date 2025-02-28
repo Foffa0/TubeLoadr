@@ -2,6 +2,9 @@
 
 namespace TubeLoadr.Models
 {
+    /// <summary>
+    /// Represents a video that is already downloaded.
+    /// </summary>
     public class DownloadedVideo
     {
         public Guid Id { get; }

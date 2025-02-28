@@ -3,6 +3,9 @@ using TubeLoadr.Services.GitHub;
 
 namespace TubeLoadr.Commands
 {
+    /// <summary>
+    /// Check for updates on github.
+    /// </summary>
     internal class UpdateCheckCommand : AsyncCommandBase
     {
         private UpdateService _updateService;

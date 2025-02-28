@@ -53,7 +53,6 @@ namespace TubeLoadr.Services.GitHub
             {
                 //This local Version and the Version on GitHub are equal.
                 Debug.WriteLine("This local Version and the Version on GitHub are equal.");
-                versionState = true;
             }
             return versionState;
         }

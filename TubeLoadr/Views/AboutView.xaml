@@ -24,7 +24,7 @@
         </TextBlock>
         <StackPanel Orientation="Vertical" Grid.Row="2">
             <TextBlock Foreground="White" FontSize="20" FontFamily="/Resources/Fonts/#Poppins">
-                Copyright (c) 2023 TubeLoadr and its contributors
+                Copyright (c) 2025 TubeLoadr and its contributors
             </TextBlock>
             <TextBlock Foreground="White" FontSize="20" FontFamily="/Resources/Fonts/#Poppins">
                 Licensed under Apache-2.0 license

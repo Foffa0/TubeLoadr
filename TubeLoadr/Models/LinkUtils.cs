@@ -4,6 +4,11 @@ namespace TubeLoadr.Models
 {
     internal class LinkUtils
     {
+        /// <summary>
+        /// Checks if a link is a valid youtube url.
+        /// </summary>
+        /// <param name="link">The youtube link.</param>
+        /// <returns></returns>
         public static bool CheckIsYouTubeLink(string link)
         {
             if (string.IsNullOrEmpty(link)) return false;

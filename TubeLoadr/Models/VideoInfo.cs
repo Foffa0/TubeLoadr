@@ -2,6 +2,9 @@
 
 namespace TubeLoadr.Models
 {
+    /// <summary>
+    /// Contains the important metadata of a video that is needed for download.
+    /// </summary>
     public class VideoInfo
     {
         public string Title { get; }
