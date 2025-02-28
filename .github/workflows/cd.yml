@@ -102,7 +102,7 @@ jobs:
       uses: Cyberboss/install-winget@v1
 
     - name: install yt-dlp
-      run: winget install yt-dlp --location "TubeLoadr\Downloadtools"
+      run: winget install yt-dlp --location "TubeLoadr\Downloadtools" --accept-package-agreements --accept-source-agreements
       
     # Execute all unit tests in the solution
     - name: Execute unit tests
