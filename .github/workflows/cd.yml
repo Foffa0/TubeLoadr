@@ -99,18 +99,10 @@ jobs:
         Invoke-DisableOutOfProcBuild
     
     - name: Install ffmpeg
-      uses: engineerd/configurator@v0.0.9
-      with:
-          name: "ffmpeg.exe"
-          url: "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
-          pathInArchive: "ffmpeg-7.1.1-essentials_build/bin/ffmpeg.exe"
-
-    - name: Install ffprobe
-      uses: engineerd/configurator@v0.0.9
-      with:
-          name: "ffprobe.exe"
-          url: "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
-          pathInArchive: "ffmpeg-7.1.1-essentials_build/bin/ffprobe.exe"
+      run: |
+        curl https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip -O ffmpeg-release-essentials.zip
+        7z e ffmpeg-release-essentials.zip -offmpeg-release-essentials
+        move ffmpeg-release-essentials\ffmpeg-7.1.1-essentials_build\bin\*.exe ${{github.workspace}}\TubeLoadr\Downloadtools
 
     - name: Install winget
       uses: Cyberboss/install-winget@v1
