@@ -1,6 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/dotnet/Nerdbank.GitVersioning/main/src/NerdBank.GitVersioning/version.schema.json",
-  "version": "0.11.1",
+  "version": "0.12",
+  "assemblyVersion": {
+    "precision": "revision" // optional. Use when you want a more precise assembly version than the default major.minor.
+  },
   "publicReleaseRefSpec": [
     "^refs/heads/master$",
     "^refs/heads/v\\d+(?:\\.\\d+)?$"

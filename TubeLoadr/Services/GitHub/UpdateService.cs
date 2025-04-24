@@ -1,7 +1,6 @@
 ﻿using Octokit;
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace TubeLoadr.Services.GitHub
@@ -30,9 +29,10 @@ namespace TubeLoadr.Services.GitHub
             bool versionState = false;
             GitHubClient client = new GitHubClient(new ProductHeaderValue("TubeLoadrApp"));
 
-            int index = Assembly.GetEntryAssembly().GetName().Version.ToString().LastIndexOf(".");
+            //int index = Assembly.GetEntryAssembly().GetName().Version.ToString().LastIndexOf(".");
 
-            Version localVersion = new Version(Assembly.GetEntryAssembly().GetName().Version.ToString().Substring(0, index));
+            Version localVersion = new Version(ThisAssembly.AssemblyVersion);
+
             var latest = await client.Repository.Release.GetLatest("Foffa0", "TubeLoadr");
             Version latestGitHubVersion = new Version(latest.TagName.Substring(1));
 
