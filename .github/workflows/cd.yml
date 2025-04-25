@@ -100,7 +100,7 @@ jobs:
     
     - name: Install ffmpeg
       run: |
-        D:\Downloads> if (Test-Path "${{github.workspace}}\TubeLoadr\Downloadtools") {}
+        if (Test-Path "${{github.workspace}}\TubeLoadr\Downloadtools") {}
         else {
           mkdir ${{github.workspace}}\TubeLoadr\Downloadtools
         }
