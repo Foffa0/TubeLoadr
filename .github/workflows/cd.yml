@@ -40,8 +40,8 @@ name: Wpf Continuous Delivery
 
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - 'v**'
 
 jobs:
 
@@ -100,7 +100,7 @@ jobs:
     
     - name: Install ffmpeg
       run: |
-        curl https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip -O ${{github.workspace}}\ffmpeg-release-essentials.zip
+        curl "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -L -O ${{github.workspace}}\ffmpeg-release-essentials.zip
         7z e ${{github.workspace}}\ffmpeg-release-essentials.zip -o${{github.workspace}}\ffmpeg-release-essentials
         if (Test-Path "${{github.workspace}}\TubeLoadr\Downloadtools\ffplay.exe") {
           Remove-Item -Path "${{github.workspace}}\TubeLoadr\Downloadtools\ffplay.exe"
