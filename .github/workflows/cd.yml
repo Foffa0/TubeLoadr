@@ -111,7 +111,7 @@ jobs:
         if (Test-Path "${{github.workspace}}\TubeLoadr\Downloadtools\ffmpeg.exe") {
           Remove-Item -Path "${{github.workspace}}\TubeLoadr\Downloadtools\ffmpeg.exe"
         }
-        move ${{github.workspace}}\ffmpeg-release-essentials\*.exe ${{github.workspace}}\TubeLoadr\Downloadtools
+        move ${{github.workspace}}\ffmpeg-release-essentials\*.exe ${{github.workspace}}\TubeLoadr\Downloadtools -Force
 
     - name: Install winget
       uses: Cyberboss/install-winget@v1
