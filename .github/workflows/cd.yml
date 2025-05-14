@@ -128,6 +128,9 @@ jobs:
         Configuration: Release
         Platform: x64
 
+    - name: Clean build environment
+      run: dotnet clean
+
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Setup VS Dev Environment
       uses: seanmiddleditch/gha-setup-vsdevenv@v4
