@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_2C901173941244A2881C73CF4497C6C9"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_7AE8F292BE4C4455AB4D685E1C0002C3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -28,6 +22,12 @@
         "Entry"
         {
         "MsmKey" = "8:_830D33FF17F44CC7859AF6114E51AE14"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8E98A3C20D674A6FBCC79E13C16D2A15"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -345,7 +345,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_D41747B39E9C4EC6AB727A0AFE57FC13"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E8F5844BC0A145D08D069C2488613328"
             {
             "Name" = "8:TubeLoadr"
             "Arguments" = "8:"
@@ -353,13 +353,13 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_2C901173941244A2881C73CF4497C6C9"
-            "Folder" = "8:_500708DA51E040DA8F094D9527C5D3E4"
+            "Target" = "8:_8E98A3C20D674A6FBCC79E13C16D2A15"
+            "Folder" = "8:_E11A88A84D274478925918CA81BE896A"
             "WorkingFolder" = "8:_2A993B41F2A540BCA7CD90E26C7A1ED4"
             "Icon" = "8:"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_FA9F446E3DF743018D392A2D4CFAA883"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_FC934A907E794EADB5201883B3E4E60D"
             {
             "Name" = "8:TubeLoadr"
             "Arguments" = "8:"
@@ -367,8 +367,8 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_2C901173941244A2881C73CF4497C6C9"
-            "Folder" = "8:_E11A88A84D274478925918CA81BE896A"
+            "Target" = "8:_8E98A3C20D674A6FBCC79E13C16D2A15"
+            "Folder" = "8:_500708DA51E040DA8F094D9527C5D3E4"
             "WorkingFolder" = "8:_2A993B41F2A540BCA7CD90E26C7A1ED4"
             "Icon" = "8:"
             "Feature" = "8:"
@@ -772,7 +772,7 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2C901173941244A2881C73CF4497C6C9"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_8E98A3C20D674A6FBCC79E13C16D2A15"
             {
             "SourcePath" = "8:..\\TubeLoadr\\obj\\x64\\Release\\net7.0-windows\\win-x64\\apphost.exe"
             "TargetName" = "8:"
@@ -792,7 +792,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             "ProjectOutputGroupRegister" = "3:1"
-            "OutputConfiguration" = "8:Release|x64"
+            "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:PublishItems"
             "OutputProjectGuid" = "8:{AD827D64-C4C0-4F2F-9A01-83512CE60B55}"
             "ShowKeyOutput" = "11:TRUE"
