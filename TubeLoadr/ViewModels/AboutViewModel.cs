@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Reflection;
+using System.Windows.Input;
 using TubeLoadr.Commands;
 
 namespace TubeLoadr.ViewModels
@@ -17,7 +18,7 @@ namespace TubeLoadr.ViewModels
 
         public AboutViewModel()
         {
-            Version = ThisAssembly.AssemblyVersion;
+            Version = Assembly.GetEntryAssembly().GetName().Version.ToString();
             OpenBrowserCommand = new OpenBrowserCommand();
         }
     }
