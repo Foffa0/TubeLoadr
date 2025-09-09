@@ -39,6 +39,7 @@
 name: Wpf Continuous Delivery
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'v**'
