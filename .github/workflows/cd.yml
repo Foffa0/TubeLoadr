@@ -109,14 +109,6 @@ jobs:
         7z e ${{github.workspace}}\ffmpeg-release-essentials.zip -o${{github.workspace}}\ffmpeg-release-essentials
         move ${{github.workspace}}\ffmpeg-release-essentials\*.exe ${{github.workspace}}\TubeLoadr\Downloadtools
 
-    - name: Close Windows Terminal
-      run: |
-        Get-Process WindowsTerminal -ErrorAction SilentlyContinue | Stop-Process -Force
-        Write-Host "Closed any running Windows Terminal processes."
-    
-    - name: Install winget
-      uses: Cyberboss/install-winget@v1
-
     - name: install yt-dlp
       run: winget install yt-dlp --location ${{github.workspace}}\TubeLoadr\Downloadtools --accept-package-agreements --accept-source-agreements
 
