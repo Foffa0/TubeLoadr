@@ -64,6 +64,15 @@ namespace TubeLoadr.ViewModels
 
             Application.Current.MainWindow.StateChanged += WindowStateChanged;
 
+            if (Application.Current.MainWindow.WindowState != WindowState.Maximized)
+            {
+                WindowStateSymbol = "🗗";
+            }
+            else
+            {
+                WindowStateSymbol = "☐";
+            }
+
             NewerVersionAvailable = false;
 
             UpdateCheckCommand.Execute(this);

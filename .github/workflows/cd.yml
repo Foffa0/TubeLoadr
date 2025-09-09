@@ -39,9 +39,10 @@
 name: Wpf Continuous Delivery
 
 on:
+  workflow_dispatch:
   push:
-    tags:
-      - '*'
+    branches:
+      - 'v**'
 
 jobs:
 
@@ -100,7 +101,11 @@ jobs:
     
     - name: Install ffmpeg
       run: |
-        curl https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip -O ${{github.workspace}}\ffmpeg-release-essentials.zip
+        if (Test-Path "${{github.workspace}}\TubeLoadr\Downloadtools") {}
+        else {
+          mkdir ${{github.workspace}}\TubeLoadr\Downloadtools
+        }
+        curl "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -L -O ${{github.workspace}}\ffmpeg-release-essentials.zip
         7z e ${{github.workspace}}\ffmpeg-release-essentials.zip -o${{github.workspace}}\ffmpeg-release-essentials
         move ${{github.workspace}}\ffmpeg-release-essentials\*.exe ${{github.workspace}}\TubeLoadr\Downloadtools
 
@@ -119,9 +124,13 @@ jobs:
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration /p:Platform=$env:Platform
       env:
         Configuration: Release
+        Platform: x64
+
+    - name: Clean build environment
+      run: dotnet clean --configuration Release
 
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Setup VS Dev Environment
