@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:loadingspinnercontrol="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
         mc:Ignorable="d"
         Height="700" Width="1300"
         FontFamily="/Resources/Fonts/#Poppins"
@@ -91,9 +92,18 @@
                 </Button>
             </Grid>
 
+            
+
             <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Background="{StaticResource WindowTheme}">
                 <ContentControl  Content="{Binding CurrentViewModel}" Margin="10" />
             </Border>
+
+            <DockPanel Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Background="{StaticResource WindowTheme}" Opacity="0.7" Visibility="{Binding IsYtdlpUpdating, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Background="Transparent"  Orientation="Vertical" VerticalAlignment="Center">
+                    <TextBlock Text="Downloading latest yt-dlp version..." Style="{StaticResource HeadingTheme}" Margin="20" HorizontalAlignment="Center"/>
+                    <loadingspinnercontrol:LoadingSpinner Thickness="5" Color="Gray" Diameter="100" IsLoading="True" VerticalAlignment="Center"/>
+                </StackPanel>
+            </DockPanel>
         </Grid>
     </Border>
 </Window>

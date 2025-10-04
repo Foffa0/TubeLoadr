@@ -19,7 +19,7 @@ namespace TubeLoadr.Services.GitHub
                 IsNeverVersionAvailableChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler IsNeverVersionAvailableChanged;
+        public event EventHandler? IsNeverVersionAvailableChanged;
 
         /// <summary>
         /// Checks if there is a newer release on Github
