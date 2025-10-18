@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Windows;
 using YoutubeDLSharp;
 
 namespace TubeLoadr.Services.yt_dlp
@@ -55,8 +56,23 @@ namespace TubeLoadr.Services.yt_dlp
             string? dir = System.IO.Path.GetDirectoryName(Environment.ProcessPath);
             var ytdlp = new YoutubeDL();
             ytdlp.YoutubeDLPath = dir + @"\Downloadtools\yt-dlp.exe";
-            await YoutubeDLSharp.Utils.DownloadYtDlp(dir + @"\Downloadtools\");
-            IsUpdating = false;
+
+            try
+            {
+                await YoutubeDLSharp.Utils.DownloadYtDlp(dir + @"\Downloadtools\");
+            }
+            catch (System.UnauthorizedAccessException e)
+            {
+                MessageBox.Show("Access denied when trying to update yt-dlp. Please run TubeLoadr as administrator and try again.\n\n", "Update Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Yt-dlp could not be updated.\n\n" + ex.Message, "Update Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsUpdating = false;
+            }
 
             ytdlp = new YoutubeDL();
             ytdlp.YoutubeDLPath = dir + @"\Downloadtools\yt-dlp.exe";
